@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "76975178223",
+    "project_id": "losty-1b42c",
+    "storage_bucket": "losty-1b42c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76975178223:android:96e24af866e5d691e6761a",
+        "android_client_info": {
+          "package_name": "com.example.foundy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76975178223-edg1ln29v1g1g83396f32h35o0oh1a8f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAm3y99Zmf38xgYTzJ_U-hPNWu-YJyX_2I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "76975178223-edg1ln29v1g1g83396f32h35o0oh1a8f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
