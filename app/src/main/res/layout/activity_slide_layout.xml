@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,15 +9,27 @@
 
     <VideoView
         android:id="@+id/slideVideo"
-        android:layout_width="337dp"
-        android:layout_height="303dp"
+        android:layout_width="351dp"
+        android:layout_height="302dp"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginEnd="30dp"
         tools:layout_editor_absoluteX="37dp"
         tools:layout_editor_absoluteY="83dp" />
 
     <TextView
         android:id="@+id/slideHeading"
-        android:layout_width="86dp"
-        android:layout_height="41dp"
+        android:layout_width="222dp"
+        android:layout_height="84dp"
+        android:layout_below="@+id/slideVideo"
+        android:layout_alignParentStart="true"
+        android:layout_centerInParent="true"
+        android:layout_marginStart="87dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
         android:text="TextView"
         android:textSize="20sp"
         android:textStyle="bold"
@@ -27,7 +40,13 @@
         android:id="@+id/slideDescription"
         android:layout_width="313dp"
         android:layout_height="92dp"
+        android:layout_below="@+id/slideHeading"
+        android:layout_alignEnd="@+id/slideVideo"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center"
         android:text="TextView"
         tools:layout_editor_absoluteX="49dp"
         tools:layout_editor_absoluteY="494dp" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>
