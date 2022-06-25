@@ -49,4 +49,14 @@
         android:text="TextView"
         tools:layout_editor_absoluteX="49dp"
         tools:layout_editor_absoluteY="494dp" />
+
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="60dp"
+        android:layout_height="55dp"
+        android:layout_below="@+id/slideDescription"
+        android:layout_marginStart="-10dp"
+        android:layout_marginTop="100dp"
+        android:layout_toEndOf="@+id/slideDescription"
+        android:src="@drawable/ic_baseline_check_24" />
 </RelativeLayout>
