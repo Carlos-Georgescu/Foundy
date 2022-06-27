@@ -8,6 +8,9 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,6 +20,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mSlideViewPager;
     private LinearLayout mDotLayout;
     private TextView[] mDots;
+    private ImageButton finishB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
         sliderAsapter = new SlideLayoutAdapter(this);
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
+        finishB = (ImageButton) findViewById(R.id.doneButton);
 
         mSlideViewPager.setAdapter(sliderAsapter);
 
@@ -33,7 +38,17 @@ public class MainActivity extends AppCompatActivity {
 
         mSlideViewPager.addOnPageChangeListener(viewListener);
 
+        finishB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, ChoiceScreen.class);
+                System.out.println("clicked");
+                startActivity(i);
+            }
+        });
+
     }
+
 
     public void addDotsIndicator(int position){
         mDots = new TextView[3];
@@ -65,6 +80,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onPageSelected(int position) {
             addDotsIndicator(position);
+            finishB.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent i = new Intent(MainActivity.this, ChoiceScreen.class);
+                    System.out.println("clicked");
+                    startActivity(i);
+                }
+            });
         }
 
         @Override

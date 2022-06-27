@@ -19,8 +19,18 @@
         android:layout_below="@+id/slideViewPager"
         android:layout_alignParentStart="true"
         android:layout_centerInParent="true"
-        android:layout_marginStart="161dp"
-        android:layout_marginTop="-44dp"
+        android:layout_marginStart="123dp"
+        android:layout_marginTop="-45dp"
         android:orientation="horizontal"></LinearLayout>
+
+    <ImageButton
+        android:id="@+id/doneButton"
+        android:layout_width="143dp"
+        android:layout_height="109dp"
+        android:layout_below="@+id/dotsLayout"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="-53dp"
+        android:layout_toEndOf="@+id/dotsLayout"
+        app:srcCompat="@drawable/ic_baseline_check_24" />
 
 </RelativeLayout>

@@ -28,14 +28,14 @@ public class SlideLayoutAdapter extends PagerAdapter {
         this.context = context;
     }
 
-    public String[] slide_images = {
-            "res/raw/slide1photo.gif",
-            "res/raw/logimage.mp4",
-            "res/raw/logimage.mp4"
+    public int[] slide_images = {
+            R.drawable.swipeimage2,
+            R.drawable.swipeimage2,
+            R.drawable.swipeimage2
     };
 
     public String[] slide_headings = {
-            "Welcome to Foundy",
+            "Welcome to Foundy :)",
             "Trust System",
             "Lost Items"
         };
@@ -63,11 +63,11 @@ public class SlideLayoutAdapter extends PagerAdapter {
         layoutInflater = (LayoutInflater) context.getSystemService(context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.activity_slide_layout, container, false);
 
-        VideoView slideImageView = (VideoView) view.findViewById(R.id.slideVideo);
+        ImageView slideImageView = (ImageView) view.findViewById(R.id.slidePicture);
         TextView slideHeading = (TextView) view.findViewById(R.id.slideHeading);
         TextView slideDescription = (TextView) view.findViewById(R.id.slideDescription);
 
-        slideImageView.setVideoPath(slide_images[position]);
+        slideImageView.setImageResource(slide_images[position]);
         slideHeading.setText(slide_headings[position]);
         slideDescription.setText(slide_descs[position]);
 

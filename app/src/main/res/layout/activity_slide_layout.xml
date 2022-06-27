@@ -7,24 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".SlideLayoutAdapter">
 
-    <VideoView
-        android:id="@+id/slideVideo"
-        android:layout_width="351dp"
-        android:layout_height="302dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="0dp"
-        android:layout_marginEnd="30dp"
-        tools:layout_editor_absoluteX="37dp"
-        tools:layout_editor_absoluteY="83dp" />
-
     <TextView
         android:id="@+id/slideHeading"
         android:layout_width="222dp"
         android:layout_height="84dp"
-        android:layout_below="@+id/slideVideo"
         android:layout_alignParentStart="true"
         android:layout_centerInParent="true"
         android:layout_marginStart="87dp"
@@ -41,22 +27,23 @@
         android:layout_width="313dp"
         android:layout_height="92dp"
         android:layout_below="@+id/slideHeading"
-        android:layout_alignEnd="@+id/slideVideo"
+        android:layout_alignEnd="@+id/slidePicture"
         android:layout_centerInParent="true"
         android:layout_marginTop="30dp"
-        android:layout_marginEnd="20dp"
+        android:layout_marginEnd="-17dp"
         android:gravity="center"
         android:text="TextView"
         tools:layout_editor_absoluteX="49dp"
         tools:layout_editor_absoluteY="494dp" />
 
-    <ImageButton
-        android:id="@+id/imageButton"
-        android:layout_width="60dp"
-        android:layout_height="55dp"
-        android:layout_below="@+id/slideDescription"
-        android:layout_marginStart="-10dp"
-        android:layout_marginTop="100dp"
-        android:layout_toEndOf="@+id/slideDescription"
-        android:src="@drawable/ic_baseline_check_24" />
+    <ImageView
+        android:id="@+id/slidePicture"
+        android:layout_width="290dp"
+        android:layout_height="252dp"
+        android:layout_above="@+id/slideHeading"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="58dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="51dp"
+        tools:src="@tools:sample/avatars" />
 </RelativeLayout>
