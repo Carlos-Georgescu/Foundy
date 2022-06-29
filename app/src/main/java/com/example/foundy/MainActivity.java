@@ -8,6 +8,8 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
+import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager mSlideViewPager;
     private LinearLayout mDotLayout;
     private TextView[] mDots;
+    private Button mDone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,12 +29,21 @@ public class MainActivity extends AppCompatActivity {
         sliderAsapter = new SlideLayoutAdapter(this);
         mSlideViewPager = (ViewPager) findViewById(R.id.slideViewPager);
         mDotLayout = (LinearLayout) findViewById(R.id.dotsLayout);
+        mDone = (Button) findViewById(R.id.doneButton);
 
         mSlideViewPager.setAdapter(sliderAsapter);
 
         addDotsIndicator(0);
 
         mSlideViewPager.addOnPageChangeListener(viewListener);
+
+        mDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MainActivity.this, ChoiceScreen.class);
+                startActivity(i);
+            }
+        });
 
     }
 

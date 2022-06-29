@@ -17,7 +17,7 @@
         android:theme="@style/Theme.Foundy"
         tools:targetApi="31">
         <activity
-            android:name=".SlideLayoutAdapter"
+            android:name=".ChoiceScreen"
             android:exported="false" />
         <activity
             android:name=".SignUp"
