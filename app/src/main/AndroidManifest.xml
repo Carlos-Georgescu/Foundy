@@ -20,6 +20,9 @@
             android:name=".ChoiceScreen"
             android:exported="false" />
         <activity
+            android:name=".uploadActivities.UploadLost"
+            android:exported="false" />
+        <activity
             android:name=".SignUp"
             android:exported="false" />
         <activity
