@@ -3,13 +3,16 @@ package com.example.foundy.uploadActivities;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.example.foundy.MapActivity;
 import com.example.foundy.R;
 
 import java.util.Calendar;
@@ -18,6 +21,7 @@ public class UploadLost extends AppCompatActivity {
 
     DatePickerDialog.OnDateSetListener setListener;
     EditText setDate;
+    Button openMapButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +29,7 @@ public class UploadLost extends AppCompatActivity {
         setContentView(R.layout.activity_upload_lost);
 
         setDate = findViewById(R.id.selectDateText);
+        openMapButton = findViewById(R.id.openMapButton);
 
         Calendar calendar = Calendar.getInstance();
         final int year = calendar.get(Calendar.YEAR);
@@ -48,6 +53,14 @@ public class UploadLost extends AppCompatActivity {
                 setDate.setText(date);
             }
         };
+
+        openMapButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(UploadLost.this, MapActivity.class);
+                startActivity(i);
+            }
+        });
 
 
     }
