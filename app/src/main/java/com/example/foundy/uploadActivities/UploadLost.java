@@ -1,6 +1,8 @@
 package com.example.foundy.uploadActivities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.example.foundy.Fragments.MapsFragment;
 import com.example.foundy.MapActivity;
 import com.example.foundy.R;
 
@@ -61,7 +64,7 @@ public class UploadLost extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-
     }
+
+
 }

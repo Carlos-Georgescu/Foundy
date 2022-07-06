@@ -10,7 +10,8 @@
         <entry key="app/src/main/res/layout/activity_map.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.2911458333333333" />
         <entry key="app/src/main/res/layout/activity_slide_layout.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_upload_lost.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_upload_lost.xml" value="0.11671752929687501" />
+        <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.1585144927536232" />
       </map>
     </option>
   </component>
