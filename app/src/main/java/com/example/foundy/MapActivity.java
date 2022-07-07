@@ -62,6 +62,7 @@ public class MapActivity extends AppCompatActivity{
         });
 
 
+
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
         fusedLocationClient.getLastLocation()

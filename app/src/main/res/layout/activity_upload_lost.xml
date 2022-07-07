@@ -54,7 +54,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/electronic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -86,16 +86,16 @@
         tools:layout_editor_absoluteX="25dp" />
 
     <Button
-        android:id="@+id/button8"
+        android:id="@+id/office"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:text="Office"
-        app:layout_constraintStart_toEndOf="@+id/button7"
-        app:layout_constraintTop_toTopOf="@+id/button7" />
+        app:layout_constraintStart_toEndOf="@+id/toys"
+        app:layout_constraintTop_toTopOf="@+id/toys" />
 
     <TextView
-        android:id="@+id/textView10"
+        android:id="@+id/question1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -114,10 +114,10 @@
         android:layout_marginTop="36dp"
         android:text="Help me find it!"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName4" />
+        app:layout_constraintTop_toBottomOf="@+id/question2Answer" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName3"
+        android:id="@+id/question1Answer"
         android:layout_width="339dp"
         android:layout_height="39dp"
         android:layout_marginStart="4dp"
@@ -129,7 +129,7 @@
         app:layout_constraintTop_toBottomOf="@+id/textView4" />
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/question2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
@@ -141,7 +141,7 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName4"
+        android:id="@+id/question2Answer"
         android:layout_width="339dp"
         android:layout_height="39dp"
         android:layout_marginStart="4dp"
@@ -165,41 +165,41 @@
         app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
     <Button
-        android:id="@+id/button7"
+        android:id="@+id/toys"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="28dp"
         android:layout_marginTop="14dp"
         android:text="Toys"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button4" />
+        app:layout_constraintTop_toBottomOf="@+id/electronic" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/jewlery"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="Jewlery"
-        app:layout_constraintStart_toEndOf="@+id/button4"
-        app:layout_constraintTop_toTopOf="@+id/button4" />
+        app:layout_constraintStart_toEndOf="@+id/electronic"
+        app:layout_constraintTop_toTopOf="@+id/electronic" />
 
     <Button
-        android:id="@+id/button6"
+        android:id="@+id/clothing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="Clothing"
-        app:layout_constraintStart_toEndOf="@+id/button5"
-        app:layout_constraintTop_toTopOf="@+id/button5" />
+        app:layout_constraintStart_toEndOf="@+id/jewlery"
+        app:layout_constraintTop_toTopOf="@+id/jewlery" />
 
     <Button
-        android:id="@+id/button9"
+        android:id="@+id/other"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
         android:text="Other"
-        app:layout_constraintStart_toEndOf="@+id/button8"
-        app:layout_constraintTop_toTopOf="@+id/button8" />
+        app:layout_constraintStart_toEndOf="@+id/office"
+        app:layout_constraintTop_toTopOf="@+id/office" />
 
     <TextView
         android:id="@+id/textView6"
