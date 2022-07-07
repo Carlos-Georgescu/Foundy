@@ -1,4 +1,4 @@
-package com.example.foundy;
+package com.example.foundy.Structures;
 
 public class User {
 

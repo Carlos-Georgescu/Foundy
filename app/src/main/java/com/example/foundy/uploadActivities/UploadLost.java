@@ -24,6 +24,9 @@ import android.widget.TextView;
 import com.example.foundy.Fragments.MapsFragment;
 import com.example.foundy.MapActivity;
 import com.example.foundy.R;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 
@@ -43,6 +46,7 @@ public class UploadLost extends AppCompatActivity {
     TextView question2;
     Button takePictureButton;
     ImageView itemPicture;
+    Button helpMeFind;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +66,8 @@ public class UploadLost extends AppCompatActivity {
         question1 = findViewById(R.id.question1);
         question2 = findViewById(R.id.question2);
         takePictureButton = findViewById(R.id.takePictureButton);
+        helpMeFind = findViewById(R.id.helpMeFind);
+
 
         Calendar calendar = Calendar.getInstance();
         final int year = calendar.get(Calendar.YEAR);
@@ -166,6 +172,17 @@ public class UploadLost extends AppCompatActivity {
                 mGetContent.launch("image/*");
             }
         });
+
+        helpMeFind.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final FirebaseDatabase database = FirebaseDatabase.getInstance();
+                DatabaseReference ref = database.getReference("server/saving-data/losty");
+
+
+            }
+        });
+
 
 
     }
