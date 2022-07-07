@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.foundy.ChoiceScreen;
 import com.example.foundy.Fragments.MapsFragment;
 import com.example.foundy.MapActivity;
 import com.example.foundy.R;
@@ -206,7 +207,10 @@ public class UploadLost extends AppCompatActivity {
                 lostItem.setWhatLost(whatLostText.getText().toString());
 
 
-                mDatabase.child("Users").child("").setValue(lostItem);
+                mDatabase.child("Users").child("LostItems").setValue(lostItem);
+
+                Intent i = new Intent(UploadLost.this, ChoiceScreen.class);
+                startActivity(i);
 
 
 
