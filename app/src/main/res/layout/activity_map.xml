@@ -9,13 +9,21 @@
     tools:context=".MapActivity">
 
     <androidx.fragment.app.FragmentContainerView
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:map="http://schemas.android.com/apk/res-auto"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:id="@+id/googleMapView"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="341dp"
         android:layout_height="604dp"
-        tools:layout_editor_absoluteX="35dp"
-        tools:layout_editor_absoluteY="63dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         tools:ignore="MissingConstraints" />
+
+    <Button
+        android:id="@+id/doneMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Done"
+        app:layout_constraintEnd_toEndOf="@+id/googleMapView"
+        app:layout_constraintTop_toBottomOf="@+id/googleMapView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

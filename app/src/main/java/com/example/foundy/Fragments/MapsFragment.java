@@ -11,6 +11,8 @@ import androidx.fragment.app.Fragment;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
@@ -27,10 +29,14 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 
 public class MapsFragment extends Fragment {
@@ -39,16 +45,9 @@ public class MapsFragment extends Fragment {
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private Location lastKnownLocation;
-
-    private boolean locationPermissionGranted;
-    private static final int PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION = 1;
-    private static final int DEFAULT_ZOOM = 15;
     private double currentLong;
     private double currentLat;
-    private final LatLng defaultLocation = new LatLng(-33.8523341, 151.2106085);
-    // The entry point to the Fused Location Provider.
-    private FusedLocationProviderClient fusedLocationProviderClient;
+    LatLng currentLocation;
 
 
 
@@ -69,21 +68,47 @@ public class MapsFragment extends Fragment {
 
             map = googleMap;
 
-            LatLng sydney = new LatLng(currentLat, currentLong);
+             currentLocation = new LatLng(currentLat, currentLong);
 
             googleMap.addMarker(new MarkerOptions()
-                    .position(sydney)
-                    .title("Marker in Syd")
+                    .position(currentLocation)
+                    .title("Item Lost Location")
                     .draggable(true));
-            googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+            googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
 
+            map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+                @Override
+                public void onMarkerDrag(@NonNull Marker marker) {
 
+                }
+
+                @Override
+                public void onMarkerDragEnd(@NonNull Marker marker) {
+                    currentLat = marker.getPosition().latitude;
+                    currentLong = marker.getPosition().longitude;
+                    System.out.println(currentLat);
+                }
+
+                @Override
+                public void onMarkerDragStart(@NonNull Marker marker) {
+
+                }
+            });
         }
     };
+
 
     public void setLatAndLong(double lat, double longitude){
         currentLat = lat;
         currentLong = longitude;
+    }
+
+    public String getMarkerLocation() throws IOException {
+        Address address;
+        Geocoder geocoder = new Geocoder(this.getContext());
+        address = geocoder.getFromLocation(currentLat, currentLong, 1).get(0);
+
+        return address.getLocality() + ", " + address.getAdminArea();
     }
 
 

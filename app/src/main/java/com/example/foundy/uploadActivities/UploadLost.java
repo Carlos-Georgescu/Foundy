@@ -25,6 +25,7 @@ public class UploadLost extends AppCompatActivity {
     DatePickerDialog.OnDateSetListener setListener;
     EditText setDate;
     Button openMapButton;
+    EditText lostItemLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +34,7 @@ public class UploadLost extends AppCompatActivity {
 
         setDate = findViewById(R.id.selectDateText);
         openMapButton = findViewById(R.id.openMapButton);
+        lostItemLocation = findViewById(R.id.lostItemLocation);
 
         Calendar calendar = Calendar.getInstance();
         final int year = calendar.get(Calendar.YEAR);
@@ -64,6 +66,9 @@ public class UploadLost extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        String userLostItemLocation = getIntent().getStringExtra("location");
+        lostItemLocation.setText(userLostItemLocation);
     }
 
 
