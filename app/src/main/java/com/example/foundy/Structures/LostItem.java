@@ -1,17 +1,23 @@
 package com.example.foundy.Structures;
 
+import android.net.Uri;
+
 import java.net.URI;
 
 public class LostItem {
-    public String whatLost;
-    public String whereLost;
-    public String date;
-    public String category;
-    public String answer1;
-    public String answer2;
-    public URI image;
+    private String whatLost;
+    private String whereLost;
+    private String date;
+    private String category;
+    private String answer1;
+    private String answer2;
+    private Uri image;
 
-    public LostItem(String whatLost, String whereLost, String date, String category, String answer1, String answer2, URI image) {
+    public LostItem(){
+
+    }
+
+    public LostItem(String whatLost, String whereLost, String date, String category, String answer1, String answer2, Uri image) {
         this.whatLost = whatLost;
         this.whereLost = whereLost;
         this.date = date;
@@ -45,7 +51,7 @@ public class LostItem {
         this.answer2 = answer2;
     }
 
-    public void setImage(URI image) {
+    public void setImage(Uri image) {
         this.image = image;
     }
 }

@@ -24,6 +24,7 @@ import android.widget.TextView;
 import com.example.foundy.Fragments.MapsFragment;
 import com.example.foundy.MapActivity;
 import com.example.foundy.R;
+import com.example.foundy.Structures.LostItem;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -47,6 +48,11 @@ public class UploadLost extends AppCompatActivity {
     Button takePictureButton;
     ImageView itemPicture;
     Button helpMeFind;
+    EditText whatLostText;
+    EditText question1Answer;
+    EditText question2Answer;
+    LostItem lostItem;
+    Uri saveUriPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +60,8 @@ public class UploadLost extends AppCompatActivity {
         setContentView(R.layout.activity_upload_lost);
 
         setDate = findViewById(R.id.selectDateText);
+        question1Answer = findViewById(R.id.question1Answer);
+        question2Answer = findViewById(R.id.question2Answer);
         itemPicture = findViewById(R.id.itemPicture);
         openMapButton = findViewById(R.id.openMapButton);
         lostItemLocation = findViewById(R.id.lostItemLocation);
@@ -67,6 +75,8 @@ public class UploadLost extends AppCompatActivity {
         question2 = findViewById(R.id.question2);
         takePictureButton = findViewById(R.id.takePictureButton);
         helpMeFind = findViewById(R.id.helpMeFind);
+        whatLostText = findViewById(R.id.whatLostText);
+        lostItem = new LostItem();
 
 
         Calendar calendar = Calendar.getInstance();
@@ -109,6 +119,7 @@ public class UploadLost extends AppCompatActivity {
                 electronic.setBackgroundColor(Color.LTGRAY);
                 question1.setText("What kind of device is it?");
                 question2.setText("What model is it?");
+                lostItem.setCategory("electronic");
             }
         });
 
@@ -118,6 +129,7 @@ public class UploadLost extends AppCompatActivity {
                 jewlery.setBackgroundColor(Color.LTGRAY);
                 question1.setText("How color is it?");
                 question2.setText("How much is it worth?");
+                lostItem.setCategory("jewlery");
             }
         });
 
@@ -127,6 +139,7 @@ public class UploadLost extends AppCompatActivity {
                 clothing.setBackgroundColor(Color.LTGRAY);
                 question1.setText("What brand is it?");
                 question2.setText("Any standout qualities about it?");
+                lostItem.setCategory("clothing");
             }
         });
 
@@ -136,6 +149,7 @@ public class UploadLost extends AppCompatActivity {
                 toys.setBackgroundColor(Color.LTGRAY);
                 question1.setText("What brand is it?");
                 question2.setText("What color is it?");
+                lostItem.setCategory("toys");
             }
         });
 
@@ -145,6 +159,7 @@ public class UploadLost extends AppCompatActivity {
                 office.setBackgroundColor(Color.LTGRAY);
                 question1.setText("How many did you lose?");
                 question2.setText("Where are they from?");
+                lostItem.setCategory("office");
             }
         });
 
@@ -154,6 +169,7 @@ public class UploadLost extends AppCompatActivity {
                 other.setBackgroundColor(Color.LTGRAY);
                 question1.setText("How many did you lose?");
                 question2.setText("What color is it");
+                lostItem.setCategory("other");
             }
         });
 
@@ -162,6 +178,7 @@ public class UploadLost extends AppCompatActivity {
                     @Override
                     public void onActivityResult(Uri uri) {
                         itemPicture.setImageURI(uri);
+                        saveUriPic = uri;
                     }
                 });
 
@@ -176,8 +193,21 @@ public class UploadLost extends AppCompatActivity {
         helpMeFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference ref = database.getReference("server/saving-data/losty");
+                 DatabaseReference mDatabase;
+                mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+                 if(saveUriPic != null)
+                     lostItem.setImage(saveUriPic);
+                lostItem.setWhatLost(whatLostText.getText().toString());
+                lostItem.setAnswer1(question1Answer.getText().toString());
+                lostItem.setAnswer2(question2Answer.getText().toString());
+                lostItem.setWhereLost(lostItemLocation.getText().toString());
+                lostItem.setWhatLost(whatLostText.getText().toString());
+
+
+                mDatabase.child("Users").child("").setValue(lostItem);
+
 
 
             }
