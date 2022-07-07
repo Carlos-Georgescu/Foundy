@@ -1,5 +1,8 @@
 package com.example.foundy.uploadActivities;
 
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -8,11 +11,14 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.foundy.Fragments.MapsFragment;
@@ -35,6 +41,8 @@ public class UploadLost extends AppCompatActivity {
     Button other;
     TextView question1;
     TextView question2;
+    Button takePictureButton;
+    ImageView itemPicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +50,7 @@ public class UploadLost extends AppCompatActivity {
         setContentView(R.layout.activity_upload_lost);
 
         setDate = findViewById(R.id.selectDateText);
+        itemPicture = findViewById(R.id.itemPicture);
         openMapButton = findViewById(R.id.openMapButton);
         lostItemLocation = findViewById(R.id.lostItemLocation);
         electronic = findViewById(R.id.electronic);
@@ -52,6 +61,7 @@ public class UploadLost extends AppCompatActivity {
         other = findViewById(R.id.other);
         question1 = findViewById(R.id.question1);
         question2 = findViewById(R.id.question2);
+        takePictureButton = findViewById(R.id.takePictureButton);
 
         Calendar calendar = Calendar.getInstance();
         final int year = calendar.get(Calendar.YEAR);
@@ -141,8 +151,25 @@ public class UploadLost extends AppCompatActivity {
             }
         });
 
+        ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
+                new ActivityResultCallback<Uri>() {
+                    @Override
+                    public void onActivityResult(Uri uri) {
+                        itemPicture.setImageURI(uri);
+                    }
+                });
+
+
+        takePictureButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mGetContent.launch("image/*");
+            }
+        });
+
 
     }
+
 
 
 }
