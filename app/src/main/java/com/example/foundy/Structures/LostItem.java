@@ -27,6 +27,34 @@ public class LostItem {
         this.image = image;
     }
 
+    public String getWhatLost() {
+        return whatLost;
+    }
+
+    public String getWhereLost() {
+        return whereLost;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getAnswer1() {
+        return answer1;
+    }
+
+    public String getAnswer2() {
+        return answer2;
+    }
+
+    public Uri getImage() {
+        return image;
+    }
+
     public void setWhatLost(String whatLost) {
         this.whatLost = whatLost;
     }

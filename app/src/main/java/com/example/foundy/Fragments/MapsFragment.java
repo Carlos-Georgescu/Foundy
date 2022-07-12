@@ -1,29 +1,19 @@
 package com.example.foundy.Fragments;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import android.Manifest;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
-import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.foundy.MapActivity;
 import com.example.foundy.R;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -31,23 +21,18 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
 
 public class MapsFragment extends Fragment {
 
-    public GoogleMap map;
+
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private double currentLong;
-    private double currentLat;
-    LatLng currentLocation;
+    private double mCurrentLong;
+    private double mCurrentLat;
+
 
 
 
@@ -65,10 +50,13 @@ public class MapsFragment extends Fragment {
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onMapReady(GoogleMap googleMap) {
+            LatLng currentLocation;
 
-            map = googleMap;
+            GoogleMap map;
 
-             currentLocation = new LatLng(currentLat, currentLong);
+             map = googleMap;
+
+             currentLocation = new LatLng(mCurrentLat, mCurrentLong);
 
             googleMap.addMarker(new MarkerOptions()
                     .position(currentLocation)
@@ -84,9 +72,9 @@ public class MapsFragment extends Fragment {
 
                 @Override
                 public void onMarkerDragEnd(@NonNull Marker marker) {
-                    currentLat = marker.getPosition().latitude;
-                    currentLong = marker.getPosition().longitude;
-                    System.out.println(currentLat);
+                    mCurrentLat = marker.getPosition().latitude;
+                    mCurrentLong = marker.getPosition().longitude;
+                    System.out.println(mCurrentLat);
                 }
 
                 @Override
@@ -99,14 +87,14 @@ public class MapsFragment extends Fragment {
 
 
     public void setLatAndLong(double lat, double longitude){
-        currentLat = lat;
-        currentLong = longitude;
+        mCurrentLat = lat;
+        mCurrentLong = longitude;
     }
 
     public String getMarkerLocation() throws IOException {
         Address address;
         Geocoder geocoder = new Geocoder(this.getContext());
-        address = geocoder.getFromLocation(currentLat, currentLong, 1).get(0);
+        address = geocoder.getFromLocation(mCurrentLat, mCurrentLong, 1).get(0);
 
         return address.getLocality() + ", " + address.getAdminArea();
     }
