@@ -34,31 +34,34 @@ import java.util.Calendar;
 
 public class UploadLost extends AppCompatActivity {
 
+
     DatePickerDialog.OnDateSetListener setListener;
-    EditText setDate;
-    Button openMapButton;
-    EditText lostItemLocation;
-    Button electronic;
-    Button jewlery;
-    Button clothing;
-    Button toys;
-    Button office;
-    Button other;
-    TextView question1;
-    TextView question2;
-    Button takePictureButton;
-    ImageView itemPicture;
-    Button helpMeFind;
-    EditText whatLostText;
-    EditText question1Answer;
-    EditText question2Answer;
-    LostItem lostItem;
-    Uri saveUriPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_lost);
+
+
+        EditText setDate;
+        Button openMapButton;
+        EditText lostItemLocation;
+        Button electronic;
+        Button jewlery;
+        Button clothing;
+        Button toys;
+        Button office;
+        Button other;
+        TextView question1;
+        TextView question2;
+        Button takePictureButton;
+        ImageView itemPicture;
+        Button helpMeFind;
+        EditText whatLostText;
+        EditText question1Answer;
+        EditText question2Answer;
+        LostItem lostItem;
+        Uri[] saveUriPic = new Uri[1];
 
         setDate = findViewById(R.id.selectDateText);
         question1Answer = findViewById(R.id.question1Answer);
@@ -179,7 +182,7 @@ public class UploadLost extends AppCompatActivity {
                     @Override
                     public void onActivityResult(Uri uri) {
                         itemPicture.setImageURI(uri);
-                        saveUriPic = uri;
+                        saveUriPic[0] = uri;
                     }
                 });
 
@@ -198,8 +201,8 @@ public class UploadLost extends AppCompatActivity {
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-                 if(saveUriPic != null)
-                     lostItem.setImage(saveUriPic);
+                 if(saveUriPic[0] != null)
+                     lostItem.setImage(saveUriPic[0]);
                 lostItem.setWhatLost(whatLostText.getText().toString());
                 lostItem.setAnswer1(question1Answer.getText().toString());
                 lostItem.setAnswer2(question2Answer.getText().toString());

@@ -20,15 +20,18 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class LoginActivity extends AppCompatActivity{
-    private FirebaseAuth mAuth;
-    private TextView signUp;
-    private Button signInButton;
-    private TextInputLayout loginPass;
-    private TextView loginEmail;
 
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+
+        TextView signUp;
+        Button signInButton;
+        TextInputLayout loginPass;
+        TextView loginEmail;
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
@@ -38,9 +41,7 @@ public class LoginActivity extends AppCompatActivity{
         signInButton = findViewById(R.id.loginButton);
         loginEmail = findViewById(R.id.loginEmail);
         loginPass = findViewById(R.id.loginPassword);
-
         mAuth = FirebaseAuth.getInstance();
-
         signUp = findViewById(R.id.signUpButton);
 
         signUp.setOnClickListener(new View.OnClickListener() {
