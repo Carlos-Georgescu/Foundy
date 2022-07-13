@@ -7,7 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 
-import com.example.foundy.uploadActivities.UploadLost;
+import com.example.foundy.Fragments.UploadLostFragment;
 
 public class ChoiceScreen extends AppCompatActivity {
 
@@ -23,7 +23,7 @@ public class ChoiceScreen extends AppCompatActivity {
         lostButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ChoiceScreen.this, UploadLost.class);
+                Intent i = new Intent(ChoiceScreen.this, UploadLostFragment.class);
                 startActivity(i);
             }
         });

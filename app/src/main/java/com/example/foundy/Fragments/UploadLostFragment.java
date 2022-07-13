@@ -1,11 +1,9 @@
-package com.example.foundy.uploadActivities;
+package com.example.foundy.Fragments;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -13,7 +11,6 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -22,17 +19,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.foundy.ChoiceScreen;
-import com.example.foundy.Fragments.MapsFragment;
 import com.example.foundy.MapActivity;
 import com.example.foundy.R;
 import com.example.foundy.Structures.LostItem;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 
-public class UploadLost extends AppCompatActivity {
+public class UploadLostFragment extends AppCompatActivity {
 
 
     DatePickerDialog.OnDateSetListener setListener;
@@ -91,7 +86,7 @@ public class UploadLost extends AppCompatActivity {
         setDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(UploadLost.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, setListener, year, month, day);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(UploadLostFragment.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, setListener, year, month, day);
                 datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 datePickerDialog.show();
             }
@@ -109,7 +104,7 @@ public class UploadLost extends AppCompatActivity {
         openMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(UploadLost.this, MapActivity.class);
+                Intent i = new Intent(UploadLostFragment.this, MapActivity.class);
                 startActivity(i);
             }
         });
@@ -212,7 +207,7 @@ public class UploadLost extends AppCompatActivity {
 
                 mDatabase.child("Users").child("LostItems").setValue(lostItem);
 
-                Intent i = new Intent(UploadLost.this, ChoiceScreen.class);
+                Intent i = new Intent(UploadLostFragment.this, ChoiceScreen.class);
                 startActivity(i);
 
 
