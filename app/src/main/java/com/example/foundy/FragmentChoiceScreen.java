@@ -4,26 +4,24 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Button;
 
+import com.example.foundy.Fragments.HomeFragment;
+import com.example.foundy.Fragments.ProfileFragment;
 import com.example.foundy.Fragments.UploadFragment;
-import com.example.foundy.Fragments.UploadLostFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 
-public class ChoiceScreen extends AppCompatActivity {
+public class FragmentChoiceScreen extends AppCompatActivity {
 
     Button lostButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choice_screen);
+        setContentView(R.layout.fragment_choice_screen);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavigation);
 
@@ -37,6 +35,11 @@ public class ChoiceScreen extends AppCompatActivity {
                     case R.id.nav_upload:
                         currentFrag = new UploadFragment();
                         break;
+                    case R.id.nav_profile:
+                        currentFrag = new ProfileFragment();
+                        break;
+                    case R.id.nav_home:
+                        currentFrag = new HomeFragment();
                 }
                 getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, currentFrag).commit();
                 return true;
