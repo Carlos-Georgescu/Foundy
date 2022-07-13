@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/layout/activity_slide_layout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_upload_lost.xml" value="0.25" />
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.1585144927536232" />
+        <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.20416666666666666" />
       </map>
     </option>
   </component>
