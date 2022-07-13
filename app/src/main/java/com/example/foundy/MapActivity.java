@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.foundy.Fragments.MapsFragment;
-import com.example.foundy.Fragments.UploadLostFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -81,7 +80,7 @@ public class MapActivity extends AppCompatActivity{
             public void onClick(View v) {
                 try {
                     String location = mapsFragment.getMarkerLocation();
-                    Intent i = new Intent(MapActivity.this, UploadLostFragment.class);
+                    Intent i = new Intent(MapActivity.this, UploadLost.class);
                     i.putExtra("location", location);
                     startActivity(i);
                 } catch (IOException e) {

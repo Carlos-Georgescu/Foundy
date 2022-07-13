@@ -1,4 +1,4 @@
-package com.example.foundy.Fragments;
+package com.example.foundy;
 
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -18,16 +18,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.foundy.FragmentChoiceScreen;
-import com.example.foundy.MapActivity;
-import com.example.foundy.R;
 import com.example.foundy.Structures.LostItem;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.Calendar;
 
-public class UploadLostFragment extends AppCompatActivity {
+public class UploadLost extends AppCompatActivity {
 
 
     DatePickerDialog.OnDateSetListener setListener;
@@ -86,7 +83,7 @@ public class UploadLostFragment extends AppCompatActivity {
         setDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatePickerDialog datePickerDialog = new DatePickerDialog(UploadLostFragment.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, setListener, year, month, day);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(UploadLost.this, android.R.style.Theme_Holo_Light_Dialog_MinWidth, setListener, year, month, day);
                 datePickerDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
                 datePickerDialog.show();
             }
@@ -104,7 +101,7 @@ public class UploadLostFragment extends AppCompatActivity {
         openMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(UploadLostFragment.this, MapActivity.class);
+                Intent i = new Intent(UploadLost.this, MapActivity.class);
                 startActivity(i);
             }
         });
@@ -207,7 +204,7 @@ public class UploadLostFragment extends AppCompatActivity {
 
                 mDatabase.child("Users").child("LostItems").setValue(lostItem);
 
-                Intent i = new Intent(UploadLostFragment.this, FragmentChoiceScreen.class);
+                Intent i = new Intent(UploadLost.this, FragmentChoiceScreen.class);
                 startActivity(i);
 
 

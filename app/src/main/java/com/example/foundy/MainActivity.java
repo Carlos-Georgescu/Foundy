@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         mDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, ChoiceScreen.class);
+                Intent i = new Intent(MainActivity.this, FragmentChoiceScreen.class);
                 startActivity(i);
             }
         });

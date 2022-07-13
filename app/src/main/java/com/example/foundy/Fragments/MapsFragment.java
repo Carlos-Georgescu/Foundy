@@ -74,7 +74,6 @@ public class MapsFragment extends Fragment {
                 public void onMarkerDragEnd(@NonNull Marker marker) {
                     mCurrentLat = marker.getPosition().latitude;
                     mCurrentLong = marker.getPosition().longitude;
-                    System.out.println(mCurrentLat);
                 }
 
                 @Override

@@ -27,13 +27,13 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".ChoiceScreen"
+            android:name=".FragmentChoiceScreen"
             android:exported="false" />
         <activity
             android:name=".MapActivity"
             android:exported="false" />
         <activity
-            android:name=".Fragments.UploadLostFragment"
+            android:name=".UploadLost"
             android:exported="false" />
         <activity
             android:name=".SignUp"
