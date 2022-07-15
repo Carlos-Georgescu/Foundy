@@ -145,7 +145,6 @@ public class UploadFragment extends Fragment {
 
         if (getArguments() != null) {
             String userLostItemLocation = getArguments().getString("location");
-            System.out.println("UserLostItem "+userLostItemLocation);
             lostItemLocation.setText(userLostItemLocation);
         }
 
