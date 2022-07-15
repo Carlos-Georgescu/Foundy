@@ -4,14 +4,27 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="../../../../layout/custom_preview.xml" value="0.16127098321342925" />
-        <entry key="app/src/main/res/layout/activity_choice_screen.xml" value="0.24818840579710144" />
+        <entry key="app/src/main/res/drawable/ic_baseline_check_24.xml" value="0.1455" />
+        <entry key="app/src/main/res/drawable/ic_baseline_cloud_upload_24.xml" value="0.1305" />
+        <entry key="app/src/main/res/drawable/ic_baseline_email_24.xml" value="0.1455" />
+        <entry key="app/src/main/res/drawable/ic_baseline_home_24.xml" value="0.1305" />
+        <entry key="app/src/main/res/drawable/ic_baseline_security_24.xml" value="0.1455" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.1455" />
+        <entry key="app/src/main/res/drawable/ic_launcher_foreground.xml" value="0.1455" />
+        <entry key="app/src/main/res/drawable/ic_profile_picture.xml" value="0.1455" />
+        <entry key="app/src/main/res/layout/activity_choice_screen.xml" value="0.31616631107053883" />
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.2920353982300885" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22133636474609375" />
         <entry key="app/src/main/res/layout/activity_map.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/activity_profile_fragment.xml" value="0.29127834154211957" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.2911458333333333" />
         <entry key="app/src/main/res/layout/activity_slide_layout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_upload_lost.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/fragment_home.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.1585144927536232" />
+        <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/fragment_upload.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.20416666666666666" />
       </map>
     </option>
   </component>

@@ -5,13 +5,13 @@ import android.net.Uri;
 import java.net.URI;
 
 public class LostItem {
-    public String whatLost;
-    public String whereLost;
-    public String date;
-    public String category;
-    public String answer1;
-    public String answer2;
-    public Uri image;
+    private String whatLost;
+    private String whereLost;
+    private String date;
+    private String category;
+    private String answer1;
+    private String answer2;
+    private Uri image;
 
     public LostItem(){
 
@@ -25,6 +25,34 @@ public class LostItem {
         this.answer1 = answer1;
         this.answer2 = answer2;
         this.image = image;
+    }
+
+    public String getWhatLost() {
+        return whatLost;
+    }
+
+    public String getWhereLost() {
+        return whereLost;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public String getAnswer1() {
+        return answer1;
+    }
+
+    public String getAnswer2() {
+        return answer2;
+    }
+
+    public Uri getImage() {
+        return image;
     }
 
     public void setWhatLost(String whatLost) {

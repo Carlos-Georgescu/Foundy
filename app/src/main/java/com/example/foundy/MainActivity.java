@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;
 
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         mDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(MainActivity.this, ChoiceScreen.class);
+                Intent i = new Intent(MainActivity.this, FragmentChoiceScreen.class);
                 startActivity(i);
             }
         });
@@ -56,10 +55,8 @@ public class MainActivity extends AppCompatActivity {
             mDots[i] = new TextView(this);
             mDots[i].setText(Html.fromHtml("&#8226;"));
             mDots[i].setTextSize(70);
-           mDots[i].setTextColor(Color.GRAY);
-
+            mDots[i].setTextColor(Color.GRAY);
             mDotLayout.addView(mDots[i]);
-
         }
 
         if(mDots.length > 0)

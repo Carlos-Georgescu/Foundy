@@ -5,25 +5,26 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
+import android.annotation.SuppressLint;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-import com.example.foundy.MapActivity;
+import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -32,24 +33,23 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executor;
 
 public class MapsFragment extends Fragment {
 
-    public GoogleMap map;
+
 
     // The geographical location where the device is currently located. That is, the last-known
     // location retrieved by the Fused Location Provider.
-    private double currentLong;
-    private double currentLat;
-    LatLng currentLocation;
-
-
+    private double mCurrentLong;
+    private double mCurrentLat;
+    private FusedLocationProviderClient mFusedLocationClient;
+    MapsFragment mMapsFragment;
+    GoogleMap mMap;
+    Marker mCurrentMarker;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -65,18 +65,22 @@ public class MapsFragment extends Fragment {
         @RequiresApi(api = Build.VERSION_CODES.N)
         @Override
         public void onMapReady(GoogleMap googleMap) {
+            LatLng currentLocation;
 
-            map = googleMap;
 
-             currentLocation = new LatLng(currentLat, currentLong);
 
-            googleMap.addMarker(new MarkerOptions()
+            mMap = googleMap;
+
+             currentLocation = new LatLng(mCurrentLat, mCurrentLong);
+
+            mCurrentMarker= googleMap.addMarker(new MarkerOptions()
                     .position(currentLocation)
                     .title("Item Lost Location")
                     .draggable(true));
+
             googleMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
 
-            map.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            mMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
                 @Override
                 public void onMarkerDrag(@NonNull Marker marker) {
 
@@ -84,9 +88,8 @@ public class MapsFragment extends Fragment {
 
                 @Override
                 public void onMarkerDragEnd(@NonNull Marker marker) {
-                    currentLat = marker.getPosition().latitude;
-                    currentLong = marker.getPosition().longitude;
-                    System.out.println(currentLat);
+                    mCurrentLat = marker.getPosition().latitude;
+                    mCurrentLong = marker.getPosition().longitude;
                 }
 
                 @Override
@@ -99,26 +102,98 @@ public class MapsFragment extends Fragment {
 
 
     public void setLatAndLong(double lat, double longitude){
-        currentLat = lat;
-        currentLong = longitude;
+        mCurrentLat = lat;
+        mCurrentLong = longitude;
+        LatLng currPos = new LatLng(mCurrentLat, mCurrentLong);
+        if(mCurrentMarker != null)
+            mCurrentMarker.setPosition(currPos);
     }
 
     public String getMarkerLocation() throws IOException {
         Address address;
         Geocoder geocoder = new Geocoder(this.getContext());
-        address = geocoder.getFromLocation(currentLat, currentLong, 1).get(0);
+        address = geocoder.getFromLocation(mCurrentLat, mCurrentLong, 1).get(0);
 
         return address.getLocality() + ", " + address.getAdminArea();
     }
 
 
 
+    @SuppressLint("MissingPermission")
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.activity_map, container, false);
+
+
+        Button mDoneButton;
+        View rootView =  inflater.inflate(R.layout.activity_map, container, false);
+        mDoneButton = rootView.findViewById(R.id.doneMapButton);
+
+
+
+
+        ActivityResultLauncher<String[]> locationPermissionRequest =
+                registerForActivityResult(new ActivityResultContracts
+                                .RequestMultiplePermissions(), result -> {
+                            Boolean fineLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_FINE_LOCATION, false);
+                            Boolean coarseLocationGranted = result.getOrDefault(
+                                    Manifest.permission.ACCESS_COARSE_LOCATION,false);
+                            if (fineLocationGranted != null && fineLocationGranted) {
+                                // Precise location access granted.
+                            } else if (coarseLocationGranted != null && coarseLocationGranted) {
+                                // Only approximate location access granted.
+                            } else {
+                                // No location access granted.
+                            }
+                        }
+                );
+
+        locationPermissionRequest.launch(new String[] {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+        });
+
+
+
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+
+        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+            @Override
+            public void onComplete(@NonNull Task<Location> task) {
+                if (task != null) {
+                    addFragment(task.getResult().getLatitude(), task.getResult().getLongitude());
+                }
+            }
+        });
+
+
+        mDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    String location = getMarkerLocation();
+//                    Intent i = new Intent(MapActivity.this, UploadLost.class);
+//                    i.putExtra("location", location);
+//                    startActivity(i);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("location", location);
+                    Fragment fragment = new UploadFragment();
+                    fragment.setArguments(bundle);
+
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+        return rootView;
+
     }
 
     @Override
@@ -129,5 +204,14 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
+    }
+
+    private void addFragment(double lat, double longi){
+       // FragmentManager fragmentManager = getChildFragmentManager();
+       // MapsFragment frag = new MapsFragment();
+     //   FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        this.setLatAndLong(lat, longi);
+      //  fragmentTransaction.add(R.id.googleMapView, frag);
+      //  fragmentTransaction.commit();
     }
 }
