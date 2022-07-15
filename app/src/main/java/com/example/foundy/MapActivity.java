@@ -4,6 +4,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -16,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.example.foundy.Fragments.MapsFragment;
+import com.example.foundy.Fragments.UploadFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -80,9 +82,15 @@ public class MapActivity extends AppCompatActivity{
             public void onClick(View v) {
                 try {
                     String location = mapsFragment.getMarkerLocation();
-                    Intent i = new Intent(MapActivity.this, UploadLost.class);
-                    i.putExtra("location", location);
-                    startActivity(i);
+//                    Intent i = new Intent(MapActivity.this, UploadLost.class);
+//                    i.putExtra("location", location);
+//                    startActivity(i);
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("location", location);
+                    Fragment fragment = new UploadFragment();
+                    fragment.setArguments(bundle);
+                    getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
