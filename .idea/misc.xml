@@ -16,7 +16,7 @@
         <entry key="app/src/main/res/layout/activity_login.xml" value="0.2920353982300885" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.22133636474609375" />
         <entry key="app/src/main/res/layout/activity_map.xml" value="0.1" />
-        <entry key="app/src/main/res/layout/activity_profile_fragment.xml" value="0.29127834154211957" />
+        <entry key="app/src/main/res/layout/activity_profile_fragment.xml" value="0.16304347826086957" />
         <entry key="app/src/main/res/layout/activity_sign_up.xml" value="0.2911458333333333" />
         <entry key="app/src/main/res/layout/activity_slide_layout.xml" value="0.1" />
         <entry key="app/src/main/res/layout/activity_upload_lost.xml" value="0.25" />
@@ -24,6 +24,7 @@
         <entry key="app/src/main/res/layout/fragment_maps.xml" value="0.1585144927536232" />
         <entry key="app/src/main/res/layout/fragment_profile.xml" value="0.23229166666666667" />
         <entry key="app/src/main/res/layout/fragment_upload.xml" value="0.23229166666666667" />
+        <entry key="app/src/main/res/layout/lostitem_post.xml" value="0.36040802001953126" />
         <entry key="app/src/main/res/menu/bottom_navigation.xml" value="0.20416666666666666" />
       </map>
     </option>
