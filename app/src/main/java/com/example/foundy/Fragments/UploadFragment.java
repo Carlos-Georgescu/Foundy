@@ -211,8 +211,9 @@ public class UploadFragment extends Fragment {
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-                if(saveUriPic[0] != null)
-                    mLostItem.setImage(saveUriPic[0]);
+
+               if(saveUriPic[0] != null)
+                    mLostItem.setImage(saveUriPic[0].toString());
                 mLostItem.setWhatLost(whatLostText.getText().toString());
                 mLostItem.setAnswer1(question1Answer.getText().toString());
                 mLostItem.setAnswer2(question2Answer.getText().toString());
