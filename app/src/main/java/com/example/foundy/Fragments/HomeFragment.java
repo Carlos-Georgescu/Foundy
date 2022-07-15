@@ -1,5 +1,6 @@
 package com.example.foundy.Fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -37,6 +38,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
     private List<LostItem> lostItemList;
+    private List<Uri> lostItemImages;
 
 
     @Override
@@ -67,6 +69,7 @@ public class HomeFragment extends Fragment {
     private void queryPosts() {
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("LostItems");
+
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
