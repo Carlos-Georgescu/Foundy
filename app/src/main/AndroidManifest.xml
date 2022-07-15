@@ -23,6 +23,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Foundy"
         tools:targetApi="31">
+        <activity
+            android:name=".LostItem"
+            android:exported="false"
+            android:label="@string/title_activity_lost_item"
+            android:theme="@style/Theme.Foundy.NoActionBar" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="${MAPS_API_KEY}" />
