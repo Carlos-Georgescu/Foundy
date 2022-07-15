@@ -131,9 +131,6 @@ public class MapsFragment extends Fragment {
         View rootView =  inflater.inflate(R.layout.activity_map, container, false);
         doneButton = rootView.findViewById(R.id.doneMapButton);
 
-
-
-
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {

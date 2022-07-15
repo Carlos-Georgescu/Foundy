@@ -1,6 +1,7 @@
 package com.example.foundy.Adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +21,12 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
 
     private Context mContext;
     private List<LostItem> mLostItemList;
+    private List<Uri> mLostItemImages;
 
-    public LostItemAdapter(Context mContext, List<LostItem> mLostItemList) {
+    public LostItemAdapter(Context mContext, List<LostItem> mLostItemList,List<Uri> mLostItemImages ) {
         this.mContext = mContext;
         this.mLostItemList = mLostItemList;
+        this.mLostItemImages = mLostItemImages;
     }
 
     @NonNull
@@ -36,7 +39,10 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LostItem lostItem = mLostItemList.get(position);
-        holder.bind(lostItem);
+        Uri uri = null;
+        if(mLostItemImages != null && position < mLostItemImages.size())
+             uri = mLostItemImages.get(position);
+        holder.bind(lostItem, uri);
     }
 
     @Override
@@ -59,10 +65,11 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
             whenText = itemView.findViewById(R.id.whenText);
         }
 
-        public void bind(LostItem lostItem) {
+        public void bind(LostItem lostItem, Uri uri) {
             whatText.setText(lostItem.getWhatLost());
             whereText.setText(lostItem.getWhereLost());
             whenText.setText(lostItem.getDate());
+            lostImage.setImageURI(uri);
         }
     }
 }
