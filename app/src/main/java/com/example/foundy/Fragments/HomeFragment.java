@@ -118,7 +118,8 @@ public class HomeFragment extends Fragment {
 
     private void collectAllImage()
     {
-        StorageReference listRef = FirebaseStorage.getInstance().getReference().getParent();
+        StorageReference listRef = FirebaseStorage.getInstance().getReference().child("files/uid");
+        Log.i("HomeFragment", "Inside collectAllImage");
 
         listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override

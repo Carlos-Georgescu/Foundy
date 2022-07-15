@@ -257,7 +257,7 @@ public class UploadFragment extends Fragment {
     public void uploadImage(Uri image){
         // Create a Cloud Storage reference from the app
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images" + UUID.randomUUID().toString());
+        StorageReference storageRef = storage.getReference().child("files/uid");
 
         storageRef.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
