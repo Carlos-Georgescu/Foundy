@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,11 +18,17 @@ import com.example.foundy.Adapters.LostItemAdapter;
 import com.example.foundy.R;
 import com.example.foundy.Structures.LostItem;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.ListResult;
+import com.google.firebase.storage.StorageReference;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -58,7 +65,7 @@ public class HomeFragment extends Fragment {
         mRvPosts = view.findViewById(R.id.rvPosts);
 
         lostItemList = new ArrayList<>();
-        mAdapter = new LostItemAdapter(getContext(), lostItemList);
+        mAdapter = new LostItemAdapter(getContext(), lostItemList, lostItemImages);
 
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -97,15 +104,37 @@ public class HomeFragment extends Fragment {
                             newItem.setWhatLost((String) singleUser.get("whatLost"));
                             newItem.setWhereLost((String) singleUser.get("whereLost"));
                             newItem.setDate((String) singleUser.get("category"));
-                           // newItem.setImage((URI) singleUser.get(""));
 
                             lostItemList.add(newItem);
+                            collectAllImage();
                             mAdapter.notifyDataSetChanged();
                         }
 
                     }
+
+
                 });
     }
+
+    private void collectAllImage()
+    {
+        StorageReference listRef = FirebaseStorage.getInstance().getReference().getParent();
+
+        listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
+            @Override
+            public void onSuccess(ListResult listResult) {
+                for(StorageReference file: listResult.getItems()){
+                    file.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            Log.i("HomeFragment", "Added a lost picture");
+                            lostItemImages.add(uri);
+                        }
+                    });
+                }
+            }
+        });
+    };
 
 
 
