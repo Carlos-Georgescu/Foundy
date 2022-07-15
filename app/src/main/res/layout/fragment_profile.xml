@@ -13,22 +13,17 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="profile frag" />
-
         <Button
             android:id="@+id/uploadLost"
             android:layout_width="wrap_content"
-            android:layout_height="67dp"
+            android:layout_height="108dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentBottom="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginTop="71dp"
-            android:layout_marginBottom="593dp"
-            android:text="Button" />
+            android:layout_marginStart="148dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="613dp"
+            android:text="Upload Found" />
 
     </RelativeLayout>
 
