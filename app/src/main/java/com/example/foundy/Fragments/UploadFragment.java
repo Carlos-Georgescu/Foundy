@@ -10,9 +10,11 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +23,21 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.LostItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 public class UploadFragment extends Fragment {
 
@@ -212,8 +221,6 @@ public class UploadFragment extends Fragment {
 
 
 
-               if(saveUriPic[0] != null)
-                    mLostItem.setImage(saveUriPic[0].toString());
                 mLostItem.setWhatLost(whatLostText.getText().toString());
                 mLostItem.setAnswer1(question1Answer.getText().toString());
                 mLostItem.setAnswer2(question2Answer.getText().toString());
@@ -221,6 +228,7 @@ public class UploadFragment extends Fragment {
                 mLostItem.setWhatLost(whatLostText.getText().toString());
 
                 mDatabase.child("Users").child("LostItems").push().setValue(mLostItem);
+                uploadImage(saveUriPic[0]);
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
@@ -244,5 +252,20 @@ public class UploadFragment extends Fragment {
         {
             mLostItem.setWhatLost(savedInstanceState.getString("what"));
         }
+    }
+
+    public void uploadImage(Uri image){
+        // Create a Cloud Storage reference from the app
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("images" + UUID.randomUUID().toString());
+
+        storageRef.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.e("UploadFragment","Error uploading photo");
+                }
+            }
+        });
     }
 }
