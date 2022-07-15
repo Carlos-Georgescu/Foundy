@@ -14,7 +14,6 @@ public class LostItem {
     private String category;
     private String answer1;
     private String answer2;
-    private String image;
 
     public LostItem(){
 
@@ -27,7 +26,6 @@ public class LostItem {
         this.category = category;
         this.answer1 = answer1;
         this.answer2 = answer2;
-        this.image = image.toString();
     }
 
     public String getWhatLost() {
@@ -54,12 +52,6 @@ public class LostItem {
         return answer2;
     }
 
-    public Uri getImage() {
-        if (image != null) {
-            return Uri.parse(image);
-        }
-        return Uri.parse("/Users/carlosgeorgescu/AndroidStudioProjects/Foundy2/app/src/main/res/drawable/lostandfound.gif");
-    }
 
     public void setWhatLost(String whatLost) {
         this.whatLost = whatLost;
@@ -85,7 +77,4 @@ public class LostItem {
         this.answer2 = answer2;
     }
 
-    public void setImage(String image) {
-        this.image = image.toString();
-    }
 }
