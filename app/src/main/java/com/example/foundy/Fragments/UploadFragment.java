@@ -42,10 +42,9 @@ import java.util.UUID;
 public class UploadFragment extends Fragment {
 
     DatePickerDialog.OnDateSetListener mSetListener;
-//    FragmentTransaction mFragmentTrasaction = getFragmentManager().beginTransaction();
     FragmentManager manager = getFragmentManager();
-    //FragmentTransaction transaction = manager.beginTransaction();
     LostItem mLostItem;
+    Boolean mIfFoundUpload = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,6 +73,7 @@ public class UploadFragment extends Fragment {
         EditText question1Answer;
         EditText question2Answer;
         Uri[] saveUriPic = new Uri[1];
+        TextView topText;
 
         setDate = rootView.findViewById(R.id.selectDateText);
         question1Answer = rootView.findViewById(R.id.question1Answer);
@@ -92,6 +92,8 @@ public class UploadFragment extends Fragment {
         takePictureButton = rootView.findViewById(R.id.takePictureButton);
         helpMeFind = rootView.findViewById(R.id.helpMeFind);
         whatLostText = rootView.findViewById(R.id.whatLostText);
+        topText = rootView.findViewById(R.id.topText);
+
         mLostItem = new LostItem();
 
 
@@ -99,6 +101,17 @@ public class UploadFragment extends Fragment {
         final int year = calendar.get(Calendar.YEAR);
         final int month = calendar.get(Calendar.MONTH);
         final int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+
+        if(getArguments() != null)
+        {
+            if (getArguments().getString("type").equals("found"))
+            {
+                mIfFoundUpload = true;
+                topText.setText("ADD NEW FOUND ITEM");
+                helpMeFind.setText("LETS FIND IT");
+            }
+        }
 
 
         setDate.setOnClickListener(new View.OnClickListener() {
@@ -227,8 +240,13 @@ public class UploadFragment extends Fragment {
                 mLostItem.setWhereLost(lostItemLocation.getText().toString());
                 mLostItem.setWhatLost(whatLostText.getText().toString());
 
-                mDatabase.child("Users").child("LostItems").push().setValue(mLostItem);
-                uploadImage(saveUriPic[0]);
+                if(mIfFoundUpload == false) {
+                    mDatabase.child("Users").child("LostItems").push().setValue(mLostItem);
+                    uploadImage(saveUriPic[0]);
+                }
+                else {
+                    mDatabase.child("Users").child("FoundItems").push().setValue(mLostItem);
+                }
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
@@ -257,7 +275,14 @@ public class UploadFragment extends Fragment {
     public void uploadImage(Uri image){
         // Create a Cloud Storage reference from the app
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("files/uid");
+
+
+        StorageReference storageRef = storage.getReference();
+
+        if(mIfFoundUpload == false)
+                storageRef.child("lostFiles/uid");
+        else
+            storageRef.child("foundFiles/uid");
 
         storageRef.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
