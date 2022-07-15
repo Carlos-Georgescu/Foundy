@@ -219,8 +219,7 @@ public class UploadFragment extends Fragment {
                 mLostItem.setWhereLost(lostItemLocation.getText().toString());
                 mLostItem.setWhatLost(whatLostText.getText().toString());
 
-
-                mDatabase.child("Users").child("LostItems").setValue(mLostItem);
+                mDatabase.child("Users").child("LostItems").push().setValue(mLostItem);
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);

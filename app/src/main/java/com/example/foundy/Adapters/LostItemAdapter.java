@@ -36,7 +36,7 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LostItem lostItem = mLostItemList.get(position);
-        holder.bind(lostItem)
+        holder.bind(lostItem);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
             whenText.setText(lostItem.getDate());
 
             if(lostItem.getImage() != null)
-                Glide.with(mContext).load(lostItem.getImage()).into(lostImage)
+                Glide.with(mContext).load(lostItem.getImage()).into(lostImage);
         }
     }
 }
