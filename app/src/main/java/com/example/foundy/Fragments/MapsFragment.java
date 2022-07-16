@@ -16,6 +16,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +25,9 @@ import android.widget.Button;
 import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,7 +51,6 @@ public class MapsFragment extends Fragment {
     private double mCurrentLong;
     private double mCurrentLat;
     private FusedLocationProviderClient mFusedLocationClient;
-    MapsFragment mMapsFragment;
     GoogleMap mMap;
     Marker mCurrentMarker;
 
@@ -66,8 +69,6 @@ public class MapsFragment extends Fragment {
         @Override
         public void onMapReady(GoogleMap googleMap) {
             LatLng currentLocation;
-
-
 
             mMap = googleMap;
 
@@ -128,7 +129,7 @@ public class MapsFragment extends Fragment {
 
 
         Button doneButton;
-        View rootView =  inflater.inflate(R.layout.activity_map, container, false);
+        View rootView = inflater.inflate(R.layout.activity_map, container, false);
         doneButton = rootView.findViewById(R.id.doneMapButton);
 
         ActivityResultLauncher<String[]> locationPermissionRequest =
@@ -137,7 +138,7 @@ public class MapsFragment extends Fragment {
                             Boolean fineLocationGranted = result.getOrDefault(
                                     Manifest.permission.ACCESS_FINE_LOCATION, false);
                             Boolean coarseLocationGranted = result.getOrDefault(
-                                    Manifest.permission.ACCESS_COARSE_LOCATION,false);
+                                    Manifest.permission.ACCESS_COARSE_LOCATION, false);
                             if (fineLocationGranted != null && fineLocationGranted) {
                                 // Precise location access granted.
                             } else if (coarseLocationGranted != null && coarseLocationGranted) {
@@ -148,23 +149,32 @@ public class MapsFragment extends Fragment {
                         }
                 );
 
-        locationPermissionRequest.launch(new String[] {
+        locationPermissionRequest.launch(new String[]{
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
 
+        LocationRequest locationRequest;
+        LocationCallback locationCallback;
 
-
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-
-        mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(20 * 1000);
+        locationCallback = new LocationCallback() {
             @Override
-            public void onComplete(@NonNull Task<Location> task) {
-                if (task.getResult() != null) {
-                    setLatAndLong(task.getResult().getLatitude(), task.getResult().getLongitude());
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                Location location = locationResult.getLocations().get(0);
+                if (location != null) {
+                    setLatAndLong(location.getLatitude(), location.getLongitude());
                 }
             }
-        });
+        };
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+
 
 
         doneButton.setOnClickListener(new View.OnClickListener() {
