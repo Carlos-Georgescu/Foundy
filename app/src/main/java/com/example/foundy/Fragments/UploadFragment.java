@@ -30,6 +30,8 @@ import com.example.foundy.R;
 import com.example.foundy.Structures.LostItem;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
@@ -239,12 +241,15 @@ public class UploadFragment extends Fragment {
                 mLostItem.setWhereLost(lostItemLocation.getText().toString());
                 mLostItem.setWhatLost(whatLostText.getText().toString());
 
+                FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+                String userUid = user.getUid();
+
                 if(mIfFoundUpload == false) {
-                    mDatabase.child("Users").child("LostItems").push().setValue(mLostItem);
+                    mDatabase.child("Users").child(userUid).child("LostItems").push().setValue(mLostItem);
                     uploadImage(saveUriPic[0]);
                 }
                 else {
-                    mDatabase.child("Users").child("FoundItems").push().setValue(mLostItem);
+                    mDatabase.child("Users").child(userUid).child("FoundItems").push().setValue(mLostItem);
                 }
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
