@@ -113,7 +113,8 @@ public class MapsFragment extends Fragment {
     public String getMarkerLocation() throws IOException {
         Address address;
         Geocoder geocoder = new Geocoder(this.getContext());
-        address = geocoder.getFromLocation(mCurrentLat, mCurrentLong, 1).get(0);
+
+        address = (Address) geocoder.getFromLocation(mCurrentLat, mCurrentLong, 1).get(0);
 
         return address.getLocality() + ", " + address.getAdminArea();
     }
@@ -131,6 +132,7 @@ public class MapsFragment extends Fragment {
         Button doneButton;
         View rootView = inflater.inflate(R.layout.activity_map, container, false);
         doneButton = rootView.findViewById(R.id.doneMapButton);
+
 
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
@@ -158,8 +160,8 @@ public class MapsFragment extends Fragment {
         LocationCallback locationCallback;
 
         locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setInterval(20 * 1000);
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
@@ -174,8 +176,6 @@ public class MapsFragment extends Fragment {
         };
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
         mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-
-
 
         doneButton.setOnClickListener(new View.OnClickListener() {
             @Override

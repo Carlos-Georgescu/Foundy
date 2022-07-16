@@ -103,7 +103,7 @@ public class UploadFragment extends Fragment {
         final int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 
-        if(getArguments() != null)
+        if(getArguments() != null && getArguments().getString("type") != null)
         {
             if (getArguments().getString("type").equals("found"))
             {
