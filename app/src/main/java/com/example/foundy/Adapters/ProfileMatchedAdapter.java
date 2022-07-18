@@ -24,6 +24,7 @@ public class ProfileMatchedAdapter extends FragmentStateAdapter {
             case 1:
                 return new LostMatched();
         }
+        return new FoundMatched();
     }
 
     @Override
