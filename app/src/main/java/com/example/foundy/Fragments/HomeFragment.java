@@ -21,6 +21,8 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -75,7 +77,11 @@ public class HomeFragment extends Fragment {
 
     private void queryPosts() {
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("LostItems");
+
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        String userUid = user.getUid();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(userUid).child("LostItems");
 
         ref.addListenerForSingleValueEvent(
                 new ValueEventListener() {
@@ -118,7 +124,10 @@ public class HomeFragment extends Fragment {
 
     private void collectAllImage()
     {
-        StorageReference listRef = FirebaseStorage.getInstance().getReference().child("files/uid");
+
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        String userUid = user.getUid();
+        StorageReference listRef = FirebaseStorage.getInstance().getReference().child("files/" + userUid);
         Log.i("HomeFragment", "Inside collectAllImage");
 
         listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {

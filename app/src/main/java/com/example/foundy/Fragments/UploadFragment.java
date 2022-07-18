@@ -282,13 +282,20 @@ public class UploadFragment extends Fragment {
 
 
         StorageReference storageRef = storage.getReference();
+        StorageReference reference;
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        String userUid = user.getUid();
 
-        if(mIfFoundUpload == false)
-                storageRef.child("lostFiles/uid");
-        else
-            storageRef.child("foundFiles/uid");
 
-        storageRef.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+        if(mIfFoundUpload == true) {
+            reference = storageRef.child("foundFiles/" + userUid + "/" + UUID.randomUUID());
+        }
+        else {
+            reference = storageRef.child("lostFiles/" + userUid + "/" + UUID.randomUUID());
+        }
+
+
+        reference.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if(!task.isSuccessful()){

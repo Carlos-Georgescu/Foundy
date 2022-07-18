@@ -35,9 +35,6 @@
             android:name=".FragmentChoiceScreen"
             android:exported="false" />
         <activity
-            android:name=".MapActivity"
-            android:exported="false" />
-        <activity
             android:name=".UploadLost"
             android:exported="false" />
         <activity
