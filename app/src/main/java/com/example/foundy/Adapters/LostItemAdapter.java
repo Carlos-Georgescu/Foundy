@@ -63,9 +63,6 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
             whatText.setText(lostItem.getWhatLost());
             whereText.setText(lostItem.getWhereLost());
             whenText.setText(lostItem.getDate());
-
-            if(lostItem.getImage() != null)
-                Glide.with(mContext).load(lostItem.getImage()).into(lostImage);
         }
     }
 }

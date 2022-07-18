@@ -3,6 +3,7 @@ package com.example.foundy;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
@@ -11,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -19,10 +21,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.foundy.Structures.LostItem;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.Calendar;
+import java.util.UUID;
 
 public class UploadLost extends AppCompatActivity {
 
@@ -193,29 +201,35 @@ public class UploadLost extends AppCompatActivity {
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-                 if(saveUriPic[0] != null)
-                     lostItem.setImage(saveUriPic[0]);
                 lostItem.setWhatLost(whatLostText.getText().toString());
                 lostItem.setAnswer1(question1Answer.getText().toString());
                 lostItem.setAnswer2(question2Answer.getText().toString());
                 lostItem.setWhereLost(lostItemLocation.getText().toString());
                 lostItem.setWhatLost(whatLostText.getText().toString());
-
+                uploadImage(saveUriPic);
 
                 mDatabase.child("Users").child("LostItems").setValue(lostItem);
 
                 Intent i = new Intent(UploadLost.this, FragmentChoiceScreen.class);
                 startActivity(i);
-
-
-
             }
         });
 
 
 
     }
-
+    private void uploadImage(Uri[] saveUriPic) {
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference reference = storage.getReference().child("images/" + UUID.randomUUID().toString());
+        reference.putFile(saveUriPic[0]).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
+                if(!task.isSuccessful()){
+                    Log.e("UploadLost", "Error uploading photo");
+                }
+            }
+        });
+    }
 
 
 }

@@ -2,7 +2,10 @@ package com.example.foundy.Structures;
 
 import android.net.Uri;
 
+import com.example.foundy.R;
+
 import java.net.URI;
+
 
 public class LostItem {
     private String whatLost;
@@ -11,7 +14,6 @@ public class LostItem {
     private String category;
     private String answer1;
     private String answer2;
-    private Uri image;
 
     public LostItem(){
 
@@ -24,7 +26,6 @@ public class LostItem {
         this.category = category;
         this.answer1 = answer1;
         this.answer2 = answer2;
-        this.image = image;
     }
 
     public String getWhatLost() {
@@ -51,9 +52,6 @@ public class LostItem {
         return answer2;
     }
 
-    public Uri getImage() {
-        return image;
-    }
 
     public void setWhatLost(String whatLost) {
         this.whatLost = whatLost;
@@ -79,7 +77,4 @@ public class LostItem {
         this.answer2 = answer2;
     }
 
-    public void setImage(Uri image) {
-        this.image = image;
-    }
 }

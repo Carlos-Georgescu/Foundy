@@ -118,7 +118,6 @@ public class MapsFragment extends Fragment {
     }
 
 
-
     @SuppressLint("MissingPermission")
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Nullable
@@ -128,9 +127,9 @@ public class MapsFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
 
 
-        Button mDoneButton;
+        Button doneButton;
         View rootView =  inflater.inflate(R.layout.activity_map, container, false);
-        mDoneButton = rootView.findViewById(R.id.doneMapButton);
+        doneButton = rootView.findViewById(R.id.doneMapButton);
 
 
 
@@ -164,21 +163,18 @@ public class MapsFragment extends Fragment {
         mFusedLocationClient.getLastLocation().addOnCompleteListener(new OnCompleteListener<Location>() {
             @Override
             public void onComplete(@NonNull Task<Location> task) {
-                if (task != null) {
-                    addFragment(task.getResult().getLatitude(), task.getResult().getLongitude());
+                if (task.getResult() != null) {
+                    setLatAndLong(task.getResult().getLatitude(), task.getResult().getLongitude());
                 }
             }
         });
 
 
-        mDoneButton.setOnClickListener(new View.OnClickListener() {
+        doneButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
                     String location = getMarkerLocation();
-//                    Intent i = new Intent(MapActivity.this, UploadLost.class);
-//                    i.putExtra("location", location);
-//                    startActivity(i);
 
                     Bundle bundle = new Bundle();
                     bundle.putString("location", location);
@@ -204,14 +200,5 @@ public class MapsFragment extends Fragment {
         if (mapFragment != null) {
             mapFragment.getMapAsync(callback);
         }
-    }
-
-    private void addFragment(double lat, double longi){
-       // FragmentManager fragmentManager = getChildFragmentManager();
-       // MapsFragment frag = new MapsFragment();
-     //   FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        this.setLatAndLong(lat, longi);
-      //  fragmentTransaction.add(R.id.googleMapView, frag);
-      //  fragmentTransaction.commit();
     }
 }

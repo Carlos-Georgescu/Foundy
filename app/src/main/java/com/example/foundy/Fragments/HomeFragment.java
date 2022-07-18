@@ -1,5 +1,6 @@
 package com.example.foundy.Fragments;
 
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,9 +17,16 @@ import com.example.foundy.Adapters.LostItemAdapter;
 import com.example.foundy.R;
 import com.example.foundy.Structures.LostItem;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -30,6 +38,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
     private List<LostItem> lostItemList;
+    private List<Uri> lostItemImages;
 
 
     @Override
@@ -53,6 +62,52 @@ public class HomeFragment extends Fragment {
 
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+        queryPosts();
+
     }
+
+    private void queryPosts() {
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("LostItems");
+
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        collectAllUsers((Map<String,Object>) dataSnapshot.getValue());
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+
+                    private void collectAllUsers(Map<String,Object> users) {
+
+                        //iterate through each user, ignoring their UID
+                        for (Map.Entry<String, Object> entry : users.entrySet()){
+
+                            //Get user map
+                            Map singleUser = (Map) entry.getValue();
+                            //Get phone field and append to list
+
+                            LostItem newItem = new LostItem();
+                            newItem.setWhatLost((String) singleUser.get("whatLost"));
+                            newItem.setWhereLost((String) singleUser.get("whereLost"));
+                            newItem.setDate((String) singleUser.get("category"));
+                           // newItem.setImage((URI) singleUser.get(""));
+
+                            lostItemList.add(newItem);
+                            mAdapter.notifyDataSetChanged();
+                        }
+
+                    }
+                });
+    }
+
+
+
 
 }
