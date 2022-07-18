@@ -2,6 +2,7 @@ package com.example.foundy.Adapters;
 
 import android.content.Context;
 import android.net.Uri;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.foundy.R;
 import com.example.foundy.Structures.LostItem;
 
@@ -40,8 +42,11 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         LostItem lostItem = mLostItemList.get(position);
         Uri uri = null;
-        if(mLostItemImages != null && position < mLostItemImages.size())
-             uri = mLostItemImages.get(position);
+        Log.i("LostItemAdapter", "Inside onBindViewHolder "+position + " list size: "+mLostItemImages.size());
+        if(position < mLostItemImages.size()) {
+            Log.i("LostItemAdapter", "Added image in position "+position);
+            uri = mLostItemImages.get(position);
+        }
         holder.bind(lostItem, uri);
     }
 
@@ -69,7 +74,11 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
             whatText.setText(lostItem.getWhatLost());
             whereText.setText(lostItem.getWhereLost());
             whenText.setText(lostItem.getDate());
-            lostImage.setImageURI(uri);
+            Glide.with(mContext)
+                    .load(uri)
+                    .apply(new RequestOptions().override(600, 200))
+                    .centerCrop()
+                    .into(lostImage);
         }
     }
 }

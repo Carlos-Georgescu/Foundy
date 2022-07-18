@@ -1,4 +1,4 @@
-package com.example.foundy;
+package com.example.foundy.Adapters;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -16,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.VideoView;
+
+import com.example.foundy.R;
 
 import pl.droidsonroids.gif.GifImageView;
 

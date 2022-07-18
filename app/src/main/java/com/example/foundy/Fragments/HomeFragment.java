@@ -47,7 +47,7 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
     private List<LostItem> lostItemList;
-    private List<Uri> lostItemImages;
+    private List<Uri> lostItemImages = new ArrayList<>();
 
 
     @Override
@@ -67,11 +67,11 @@ public class HomeFragment extends Fragment {
         mRvPosts = view.findViewById(R.id.rvPosts);
 
         lostItemList = new ArrayList<>();
+        collectAllImage();
+        queryPosts();
         mAdapter = new LostItemAdapter(getContext(), lostItemList, lostItemImages);
-
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
-        queryPosts();
 
     }
 
@@ -112,7 +112,6 @@ public class HomeFragment extends Fragment {
                             newItem.setDate((String) singleUser.get("category"));
 
                             lostItemList.add(newItem);
-                            collectAllImage();
                             mAdapter.notifyDataSetChanged();
                         }
 
@@ -127,7 +126,7 @@ public class HomeFragment extends Fragment {
 
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         String userUid = user.getUid();
-        StorageReference listRef = FirebaseStorage.getInstance().getReference().child("files/" + userUid);
+        StorageReference listRef = FirebaseStorage.getInstance().getReference("lostFiles/" + userUid);
         Log.i("HomeFragment", "Inside collectAllImage");
 
         listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
@@ -139,9 +138,11 @@ public class HomeFragment extends Fragment {
                         public void onSuccess(Uri uri) {
                             Log.i("HomeFragment", "Added a lost picture");
                             lostItemImages.add(uri);
+                            mAdapter.notifyDataSetChanged();
                         }
                     });
                 }
+
             }
         });
     };

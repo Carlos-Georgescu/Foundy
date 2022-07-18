@@ -280,7 +280,7 @@ public class UploadFragment extends Fragment {
     public void restoreFields(Bundle savedInstanceState){
         if(savedInstanceState != null)
         {
-            mLostItem.setWhatLost(savedInstanceState.getString("what"));
+
         }
     }
 
