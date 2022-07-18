@@ -114,6 +114,9 @@ public class UploadFragment extends Fragment {
                 helpMeFind.setText("LETS FIND IT");
             }
         }
+        else {
+            mIfFoundUpload = false;
+        }
 
 
         setDate.setOnClickListener(new View.OnClickListener() {
@@ -139,6 +142,10 @@ public class UploadFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Fragment map = new MapsFragment();
+                Bundle bundle = new Bundle();
+                if(mIfFoundUpload == true)
+                    bundle.putString("type", "found");
+                map.setArguments(bundle);
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
 
             }
@@ -250,6 +257,7 @@ public class UploadFragment extends Fragment {
                 }
                 else {
                     mDatabase.child("Users").child(userUid).child("FoundItems").push().setValue(mLostItem);
+                    uploadImage(saveUriPic[0]);
                 }
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);

@@ -6,8 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -17,12 +15,12 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
-import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -36,9 +34,6 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
 import java.io.IOException;
 
@@ -53,6 +48,7 @@ public class MapsFragment extends Fragment {
     private FusedLocationProviderClient mFusedLocationClient;
     GoogleMap mMap;
     Marker mCurrentMarker;
+    Boolean mIfFoundUploadMaps;
 
     private OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -133,6 +129,19 @@ public class MapsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.activity_map, container, false);
         doneButton = rootView.findViewById(R.id.doneMapButton);
 
+        if(getArguments() != null && getArguments().getString("type") != null)
+        {
+            if (getArguments().getString("type").equals("found"))
+            {
+                mIfFoundUploadMaps = true;
+            }
+        }
+        else {
+            mIfFoundUploadMaps = false;
+        }
+
+        Log.i("MapsFragement", "mIfFoundUploadMaps is: "+mIfFoundUploadMaps);
+
 
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
@@ -185,6 +194,8 @@ public class MapsFragment extends Fragment {
 
                     Bundle bundle = new Bundle();
                     bundle.putString("location", location);
+                    if(mIfFoundUploadMaps == true)
+                        bundle.putString("type", "found");
                     Fragment fragment = new UploadFragment();
                     fragment.setArguments(bundle);
 
