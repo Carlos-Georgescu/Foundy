@@ -44,9 +44,9 @@ import java.util.UUID;
 public class UploadFragment extends Fragment {
 
     DatePickerDialog.OnDateSetListener mSetListener;
-    FragmentManager manager = getFragmentManager();
     LostItem mLostItem;
     Boolean mIfFoundUpload = false;
+    int  mNumOfImages = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -241,7 +241,6 @@ public class UploadFragment extends Fragment {
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
-
                 mLostItem.setWhatLost(whatLostText.getText().toString());
                 mLostItem.setAnswer1(question1Answer.getText().toString());
                 mLostItem.setAnswer2(question2Answer.getText().toString());
@@ -249,16 +248,18 @@ public class UploadFragment extends Fragment {
                 mLostItem.setWhatLost(whatLostText.getText().toString());
 
                 FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+
                 String userUid = user.getUid();
 
                 if(mIfFoundUpload == false) {
+
                     mDatabase.child("Users").child(userUid).child("LostItems").push().setValue(mLostItem);
-                    uploadImage(saveUriPic[0]);
                 }
                 else {
                     mDatabase.child("Users").child(userUid).child("FoundItems").push().setValue(mLostItem);
-                    uploadImage(saveUriPic[0]);
                 }
+                mNumOfImages++;
+                uploadImage(saveUriPic[0]);
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
@@ -294,12 +295,22 @@ public class UploadFragment extends Fragment {
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         String userUid = user.getUid();
 
+        DatabaseReference mDatabase;
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+        Log.i("UploadFragment" ,"Value of number of images: "+mNumOfImages);
+
 
         if(mIfFoundUpload == true) {
-            reference = storageRef.child("foundFiles/" + userUid + "/" + UUID.randomUUID());
+            String randomgUI = UUID.randomUUID().toString();
+            reference = storageRef.child("foundFiles/" + userUid + "/" + randomgUI);
+            mDatabase.child(userUid).child("foundImages").push().setValue(randomgUI);
         }
         else {
-            reference = storageRef.child("lostFiles/" + userUid + "/" + UUID.randomUUID());
+            String randomgUI = UUID.randomUUID().toString();
+            reference = storageRef.child("lostFiles/" + userUid + "/" + randomgUI);
+            mDatabase.child("UserItems").child(userUid).child("lostImages").push().setValue(randomgUI);
         }
 
 

@@ -16,8 +16,6 @@ import com.google.android.material.navigation.NavigationBarView;
 
 public class FragmentChoiceScreen extends AppCompatActivity {
 
-    Button lostButton;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +43,10 @@ public class FragmentChoiceScreen extends AppCompatActivity {
                 return true;
             }
         });
+
+
+
+
     }
 
 }

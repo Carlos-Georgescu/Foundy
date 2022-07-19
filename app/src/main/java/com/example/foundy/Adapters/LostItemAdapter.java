@@ -71,6 +71,8 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
         }
 
         public void bind(LostItem lostItem, Uri uri) {
+            if(uri == null)
+                Log.i("LostItemAdapter" , "URI is null");
             whatText.setText(lostItem.getWhatLost());
             whereText.setText(lostItem.getWhereLost());
             whenText.setText(lostItem.getDate());

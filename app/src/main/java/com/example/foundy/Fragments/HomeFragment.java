@@ -100,20 +100,21 @@ public class HomeFragment extends Fragment {
                     private void collectAllUsers(Map<String,Object> users) {
 
                         //iterate through each user, ignoring their UID
-                        for (Map.Entry<String, Object> entry : users.entrySet()){
+                        if(users != null)
+                            for (Map.Entry<String, Object> entry : users.entrySet()){
 
-                            //Get user map
-                            Map singleUser = (Map) entry.getValue();
-                            //Get phone field and append to list
+                                //Get user map
+                                Map singleUser = (Map) entry.getValue();
+                                //Get phone field and append to list
 
-                            LostItem newItem = new LostItem();
-                            newItem.setWhatLost((String) singleUser.get("whatLost"));
-                            newItem.setWhereLost((String) singleUser.get("whereLost"));
-                            newItem.setDate((String) singleUser.get("category"));
+                                LostItem newItem = new LostItem();
+                                newItem.setWhatLost((String) singleUser.get("whatLost"));
+                                newItem.setWhereLost((String) singleUser.get("whereLost"));
+                                newItem.setDate((String) singleUser.get("category"));
 
-                            lostItemList.add(newItem);
-                            mAdapter.notifyDataSetChanged();
-                        }
+                                lostItemList.add(newItem);
+                                mAdapter.notifyDataSetChanged();
+                            }
 
                     }
 
@@ -125,9 +126,9 @@ public class HomeFragment extends Fragment {
     {
 
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+
         String userUid = user.getUid();
         StorageReference listRef = FirebaseStorage.getInstance().getReference("lostFiles/" + userUid);
-        Log.i("HomeFragment", "Inside collectAllImage");
 
         listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
             @Override
@@ -136,7 +137,7 @@ public class HomeFragment extends Fragment {
                     file.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                         @Override
                         public void onSuccess(Uri uri) {
-                            Log.i("HomeFragment", "Added a lost picture");
+                            Log.i("HomeFragment", "Added a lost picture, size list "+listResult.getItems().size());
                             lostItemImages.add(uri);
                             mAdapter.notifyDataSetChanged();
                         }
