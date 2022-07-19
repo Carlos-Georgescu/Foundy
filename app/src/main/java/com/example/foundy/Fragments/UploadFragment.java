@@ -240,7 +240,7 @@ public class UploadFragment extends Fragment {
                 DatabaseReference mDatabase;
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
-
+                mLostItem.setImageLocationString(uploadImage(saveUriPic[0]));
                 mLostItem.setWhatLost(whatLostText.getText().toString());
                 mLostItem.setAnswer1(question1Answer.getText().toString());
                 mLostItem.setAnswer2(question2Answer.getText().toString());
@@ -259,7 +259,7 @@ public class UploadFragment extends Fragment {
                     mDatabase.child("Users").child(userUid).child("FoundItems").push().setValue(mLostItem);
                 }
                 mNumOfImages++;
-                uploadImage(saveUriPic[0]);
+
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
@@ -285,7 +285,7 @@ public class UploadFragment extends Fragment {
         }
     }
 
-    public void uploadImage(Uri image){
+    public String uploadImage(Uri image){
         // Create a Cloud Storage reference from the app
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -294,6 +294,7 @@ public class UploadFragment extends Fragment {
         StorageReference reference;
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         String userUid = user.getUid();
+        String randomgUI = "";
 
         DatabaseReference mDatabase;
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -303,14 +304,12 @@ public class UploadFragment extends Fragment {
 
 
         if(mIfFoundUpload == true) {
-            String randomgUI = UUID.randomUUID().toString();
+             randomgUI = UUID.randomUUID().toString();
             reference = storageRef.child("foundFiles/" + userUid + "/" + randomgUI);
-            mDatabase.child(userUid).child("foundImages").push().setValue(randomgUI);
         }
         else {
-            String randomgUI = UUID.randomUUID().toString();
+             randomgUI = UUID.randomUUID().toString();
             reference = storageRef.child("lostFiles/" + userUid + "/" + randomgUI);
-            mDatabase.child("UserItems").child(userUid).child("lostImages").push().setValue(randomgUI);
         }
 
 
@@ -322,5 +321,6 @@ public class UploadFragment extends Fragment {
                 }
             }
         });
+        return randomgUI;
     }
 }

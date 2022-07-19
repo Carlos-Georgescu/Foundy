@@ -47,6 +47,7 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
             Log.i("LostItemAdapter", "Added image in position "+position);
             uri = mLostItemImages.get(position);
         }
+        Log.i("LostItemAdapter" ,"Path in the Adapter" + uri.toString());
         holder.bind(lostItem, uri);
     }
 

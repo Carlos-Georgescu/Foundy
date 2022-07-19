@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
         mRvPosts = view.findViewById(R.id.rvPosts);
 
         lostItemList = new ArrayList<>();
-        collectAllImage();
+       // collectAllImage();
         queryPosts();
         mAdapter = new LostItemAdapter(getContext(), lostItemList, lostItemImages);
         mRvPosts.setAdapter(mAdapter);
@@ -81,6 +81,7 @@ public class HomeFragment extends Fragment {
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         String userUid = user.getUid();
 
+        StorageReference listRef = FirebaseStorage.getInstance().getReference("lostFiles/" + userUid);
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child(userUid).child("LostItems");
 
         ref.addListenerForSingleValueEvent(
@@ -112,6 +113,18 @@ public class HomeFragment extends Fragment {
                                 newItem.setWhereLost((String) singleUser.get("whereLost"));
                                 newItem.setDate((String) singleUser.get("category"));
 
+                                String imageLocation = (String) singleUser.get("imageLocationString");
+
+                                Log.i("HomeFragment", "Location of list" +listRef.child("/"+imageLocation).toString());
+                                listRef.child("/"+imageLocation).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                    @Override
+                                    public void onSuccess(Uri uri) {
+                                        lostItemImages.add(uri);
+                                        mAdapter.notifyDataSetChanged();
+                                    }
+                                });
+
+                                Log.i("HomeFramgment", "Name of item added"+newItem.getWhatLost());
                                 lostItemList.add(newItem);
                                 mAdapter.notifyDataSetChanged();
                             }
@@ -121,34 +134,5 @@ public class HomeFragment extends Fragment {
 
                 });
     }
-
-    private void collectAllImage()
-    {
-
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-
-        String userUid = user.getUid();
-        StorageReference listRef = FirebaseStorage.getInstance().getReference("lostFiles/" + userUid);
-
-        listRef.listAll().addOnSuccessListener(new OnSuccessListener<ListResult>() {
-            @Override
-            public void onSuccess(ListResult listResult) {
-                for(StorageReference file: listResult.getItems()){
-                    file.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Log.i("HomeFragment", "Added a lost picture, size list "+listResult.getItems().size());
-                            lostItemImages.add(uri);
-                            mAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }
-
-            }
-        });
-    };
-
-
-
 
 }
