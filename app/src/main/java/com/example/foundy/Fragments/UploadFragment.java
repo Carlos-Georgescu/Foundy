@@ -27,16 +27,22 @@ import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.UUID;
 
 public class UploadFragment extends Fragment {
@@ -47,6 +53,8 @@ public class UploadFragment extends Fragment {
     int  mNumOfImages = 0;
     double itemLongitude;
     double itemLatitude;
+    ArrayList<String> mPotentialMatches;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -55,6 +63,8 @@ public class UploadFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.activity_upload_lost, container, false);
 
         restoreFields(savedInstanceState);
+
+        mPotentialMatches = new ArrayList<>();
 
 
         Button openMapButton;
@@ -238,6 +248,8 @@ public class UploadFragment extends Fragment {
             }
         });
 
+
+
         helpMeFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -270,7 +282,7 @@ public class UploadFragment extends Fragment {
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
 
-
+                itemMatchingAlgorithm();
 
             }
         });
@@ -326,10 +338,62 @@ public class UploadFragment extends Fragment {
 
     public void itemMatchingAlgorithm(){
         DatabaseReference mDatabase;
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
+
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+
+                    private void collectAllUsers(Map<String, Object> users) {
+
+                        //iterate through each user, ignoring their UID
+                        if (users != null)
+                            for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+                                Map singleItem = (Map) entry.getValue();
+
+                                double newItemLongitude = (double) singleItem.get("longitude");
+                                double newItemLatitude = (double) singleItem.get("latitude");
 
 
 
+                                double distanceDifference = calculateDistanceBetweenPoints(mItem.getLatitude(), newItemLatitude, mItem.getLongitude(), newItemLongitude);
 
+                                Log.i("UploadFragment", "Distance Difference: " + distanceDifference);
+
+                                if(distanceDifference < 500)
+                                {
+                                    mPotentialMatches.add((String) singleItem.get("imageLocationString"));
+                                }
+                            };
+                        Log.i("UploadFragment", "Long: " + mPotentialMatches.toString());
+                        }
+                    }
+                );
+    }
+
+    // returns the amount of meters between the two points
+    public double calculateDistanceBetweenPoints(double lat1, double lat2, double lng1, double lng2){
+            double earthRadius = 6371000; //meters
+            double dLat = Math.toRadians(lat2-lat1);
+            double dLng = Math.toRadians(lng2-lng1);
+            double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                            Math.sin(dLng/2) * Math.sin(dLng/2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            double dist = (double) (earthRadius * c);
+
+            return dist;
     }
 }
