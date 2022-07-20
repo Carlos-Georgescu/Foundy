@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="#D6C4C4">
 
     <ImageView
         android:id="@+id/lostImage"
@@ -13,6 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginStart="25dp"
         android:layout_marginTop="15dp"
+        android:paddingBottom="20dp"
         android:scaleType="centerCrop"
         tools:srcCompat="@tools:sample/avatars" />
 

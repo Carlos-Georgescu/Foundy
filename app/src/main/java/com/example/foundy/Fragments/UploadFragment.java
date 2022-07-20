@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,76 +22,84 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.foundy.BuildConfig;
 import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
-import com.example.foundy.Structures.LostItem;
+import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Map;
 import java.util.UUID;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class UploadFragment extends Fragment {
 
     DatePickerDialog.OnDateSetListener mSetListener;
-//    FragmentTransaction mFragmentTrasaction = getFragmentManager().beginTransaction();
-    FragmentManager manager = getFragmentManager();
-    //FragmentTransaction transaction = manager.beginTransaction();
-    LostItem mLostItem;
+    Item mItem;
+    Boolean mIfFoundUpload = false;
+    int  mNumOfImages = 0;
+    double mItemLongitude;
+    double mItemLatitude;
+    EditText mWhatLostText;
+    EditText mQuestion1Answer;
+    EditText mQuestion2Answer;
+    DatabaseReference mDatabase;
+    EditText mLostItemLocation;
+    Uri[] mSaveUriPic = new Uri[1];
+    String mUserUid;
+    ArrayList<String> mPotentialMatches;
+    Button mElectronic;
+    Button mJewlery;
+    Button mClothing;
+    Button mToys;
+    EditText mSetDate;
+    Button mOffice;
+    Button mOther;
+    TextView mQuestion1;
+    TextView mQuestion2;
+    Button mOpenMapButton;
+    Button mTakePictureButton;
+    ImageView mItemPicture;
+    Button mHelpMeFind;
+    TextView mTopText;
+    View mRootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.activity_upload_lost, container, false);
+         mRootView = inflater.inflate(R.layout.activity_upload_lost, container, false);
 
         restoreFields(savedInstanceState);
 
+        setUpFields();
 
-        Button openMapButton;
-        EditText lostItemLocation;
-        Button electronic;
-        Button jewlery;
-        Button clothing;
-        Button toys;
-        EditText setDate;
-        Button office;
-        Button other;
-        TextView question1;
-        TextView question2;
-        Button takePictureButton;
-        ImageView itemPicture;
-        Button helpMeFind;
-        EditText whatLostText;
-        EditText question1Answer;
-        EditText question2Answer;
-        Uri[] saveUriPic = new Uri[1];
-
-        setDate = rootView.findViewById(R.id.selectDateText);
-        question1Answer = rootView.findViewById(R.id.question1Answer);
-        question2Answer = rootView.findViewById(R.id.question2Answer);
-        itemPicture = rootView.findViewById(R.id.itemPicture);
-        openMapButton = rootView.findViewById(R.id.openMapButton);
-        lostItemLocation = rootView.findViewById(R.id.lostItemLocation);
-        electronic = rootView.findViewById(R.id.electronic);
-        jewlery = rootView.findViewById(R.id.jewlery);
-        clothing = rootView.findViewById(R.id.clothing);
-        toys = rootView.findViewById(R.id.toys);
-        office = rootView.findViewById(R.id.office);
-        other = rootView.findViewById(R.id.other);
-        question1 = rootView.findViewById(R.id.question1);
-        question2 = rootView.findViewById(R.id.question2);
-        takePictureButton = rootView.findViewById(R.id.takePictureButton);
-        helpMeFind = rootView.findViewById(R.id.helpMeFind);
-        whatLostText = rootView.findViewById(R.id.whatLostText);
-        mLostItem = new LostItem();
+        mItem = new Item();
 
 
         Calendar calendar = Calendar.getInstance();
@@ -101,7 +108,21 @@ public class UploadFragment extends Fragment {
         final int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 
-        setDate.setOnClickListener(new View.OnClickListener() {
+        if(getArguments() != null && getArguments().getString("type") != null)
+        {
+            if (getArguments().getString("type").equals("found"))
+            {
+                mIfFoundUpload = true;
+                mTopText.setText("ADD NEW FOUND ITEM");
+                mHelpMeFind.setText("LETS FIND IT");
+            }
+        }
+        else {
+            mIfFoundUpload = false;
+        }
+
+
+        mSetDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mSetListener, year, month, day);
@@ -115,15 +136,19 @@ public class UploadFragment extends Fragment {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month++;
                 String date = dayOfMonth +" / " + month + " / " + year;
-                setDate.setText(date);
+                mSetDate.setText(date);
             }
         };
 
 
-        openMapButton.setOnClickListener(new View.OnClickListener() {
+        mOpenMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Fragment map = new MapsFragment();
+                Bundle bundle = new Bundle();
+                if(mIfFoundUpload == true)
+                    bundle.putString("type", "found");
+                map.setArguments(bundle);
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
 
             }
@@ -132,112 +157,159 @@ public class UploadFragment extends Fragment {
 
         if (getArguments() != null) {
             String userLostItemLocation = getArguments().getString("location");
-            System.out.println("UserLostItem "+userLostItemLocation);
-            lostItemLocation.setText(userLostItemLocation);
+            mLostItemLocation.setText(userLostItemLocation);
+
+            mItemLatitude = getArguments().getDouble("latitude");
+            mItemLongitude = getArguments().getDouble("longitude");
+
         }
 
-        electronic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                electronic.setBackgroundColor(Color.LTGRAY);
-                question1.setText("What kind of device is it?");
-                question2.setText("What model is it?");
-                mLostItem.setCategory("electronic");
-            }
-        });
-
-        jewlery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                jewlery.setBackgroundColor(Color.LTGRAY);
-                question1.setText("How color is it?");
-                question2.setText("How much is it worth?");
-                mLostItem.setCategory("jewlery");
-            }
-        });
-
-        clothing.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clothing.setBackgroundColor(Color.LTGRAY);
-                question1.setText("What brand is it?");
-                question2.setText("Any standout qualities about it?");
-                mLostItem.setCategory("clothing");
-            }
-        });
-
-        toys.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toys.setBackgroundColor(Color.LTGRAY);
-                question1.setText("What brand is it?");
-                question2.setText("What color is it?");
-                mLostItem.setCategory("toys");
-            }
-        });
-
-        office.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                office.setBackgroundColor(Color.LTGRAY);
-                question1.setText("How many did you lose?");
-                question2.setText("Where are they from?");
-                mLostItem.setCategory("office");
-            }
-        });
-
-        other.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                other.setBackgroundColor(Color.LTGRAY);
-                question1.setText("How many did you lose?");
-                question2.setText("What color is it");
-                mLostItem.setCategory("other");
-            }
-        });
+        categoryButtonSelection();
 
         ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 new ActivityResultCallback<Uri>() {
                     @Override
                     public void onActivityResult(Uri uri) {
-                        itemPicture.setImageURI(uri);
-                        saveUriPic[0] = uri;
+                        mItemPicture.setImageURI(uri);
+                        mSaveUriPic[0] = uri;
                     }
                 });
 
 
-        takePictureButton.setOnClickListener(new View.OnClickListener() {
+        mTakePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mGetContent.launch("image/*");
             }
         });
 
-        helpMeFind.setOnClickListener(new View.OnClickListener() {
+
+
+        mHelpMeFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference mDatabase;
-                mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
+                setUpDatabaseAndFields();
 
-                mLostItem.setWhatLost(whatLostText.getText().toString());
-                mLostItem.setAnswer1(question1Answer.getText().toString());
-                mLostItem.setAnswer2(question2Answer.getText().toString());
-                mLostItem.setWhereLost(lostItemLocation.getText().toString());
-                mLostItem.setWhatLost(whatLostText.getText().toString());
+                if(mIfFoundUpload == false) {
 
-                mDatabase.child("Users").child("LostItems").push().setValue(mLostItem);
-                uploadImage(saveUriPic[0]);
+                    mDatabase.child("Users").child(mUserUid).child("LostItems").push().setValue(mItem);
+                }
+                else {
+                    mDatabase.child("Users").child("FoundItems").push().setValue(mItem);
+                }
+                mNumOfImages++;
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
 
-
+                itemMatchingAlgorithm();
 
             }
         });
-        return rootView;
+
+        return mRootView;
+    }
+
+    private void setUpFields() {
+        mPotentialMatches = new ArrayList<>();
+        mSetDate = mRootView.findViewById(R.id.selectDateText);
+        mQuestion1Answer = mRootView.findViewById(R.id.question1Answer);
+        mQuestion2Answer = mRootView.findViewById(R.id.question2Answer);
+        mItemPicture = mRootView.findViewById(R.id.itemPicture);
+        mOpenMapButton = mRootView.findViewById(R.id.openMapButton);
+        mLostItemLocation = mRootView.findViewById(R.id.lostItemLocation);
+        mElectronic = mRootView.findViewById(R.id.electronic);
+        mJewlery = mRootView.findViewById(R.id.jewlery);
+        mClothing = mRootView.findViewById(R.id.clothing);
+        mToys = mRootView.findViewById(R.id.toys);
+        mOffice = mRootView.findViewById(R.id.office);
+        mOther = mRootView.findViewById(R.id.other);
+        mQuestion1 = mRootView.findViewById(R.id.question1);
+        mQuestion2 = mRootView.findViewById(R.id.question2);
+        mTakePictureButton = mRootView.findViewById(R.id.takePictureButton);
+        mHelpMeFind = mRootView.findViewById(R.id.helpMeFind);
+        mWhatLostText = mRootView.findViewById(R.id.whatLostText);
+        mTopText = mRootView.findViewById(R.id.topText);
+    }
+
+    private void categoryButtonSelection() {
+        mElectronic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mElectronic.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("What kind of device is it?");
+                mQuestion2.setText("What model is it?");
+                mItem.setCategory("electronic");
+            }
+        });
+
+        mJewlery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mJewlery.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("How color is it?");
+                mQuestion2.setText("How much is it worth?");
+                mItem.setCategory("jewlery");
+            }
+        });
+
+        mClothing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClothing.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("What brand is it?");
+                mQuestion2.setText("Any standout qualities about it?");
+                mItem.setCategory("clothing");
+            }
+        });
+
+        mToys.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mToys.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("What brand is it?");
+                mQuestion2.setText("What color is it?");
+                mItem.setCategory("toys");
+            }
+        });
+
+        mOffice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOffice.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("How many did you lose?");
+                mQuestion2.setText("Where are they from?");
+                mItem.setCategory("office");
+            }
+        });
+
+        mOther.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOther.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("How many did you lose?");
+                mQuestion2.setText("What color is it");
+                mItem.setCategory("other");
+            }
+        });
+    }
+
+    private void setUpDatabaseAndFields() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+         mUserUid = user.getUid();
+
+        mItem.setImageLocationString(uploadImage(mSaveUriPic[0]));
+        mItem.setWhatLost(mWhatLostText.getText().toString());
+        mItem.setAnswer1(mQuestion1Answer.getText().toString());
+        mItem.setAnswer2(mQuestion2Answer.getText().toString());
+        mItem.setWhereLost(mLostItemLocation.getText().toString());
+        mItem.setWhatLost(mWhatLostText.getText().toString());
+        mItem.setLatitude(mItemLatitude);
+        mItem.setUserID(mUserUid);
+        mItem.setLongitude(mItemLongitude);
     }
 
     @Override
@@ -248,18 +320,35 @@ public class UploadFragment extends Fragment {
     }
 
     public void restoreFields(Bundle savedInstanceState){
-        if(savedInstanceState != null)
-        {
-            mLostItem.setWhatLost(savedInstanceState.getString("what"));
-        }
+
     }
 
-    public void uploadImage(Uri image){
+    public String uploadImage(Uri image){
         // Create a Cloud Storage reference from the app
         FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images" + UUID.randomUUID().toString());
 
-        storageRef.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
+
+        StorageReference storageRef = storage.getReference();
+        StorageReference reference;
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        String userUid = user.getUid();
+        String randomgUI = "";
+
+
+        Log.i("UploadFragment" ,"Value of number of images: "+mNumOfImages);
+
+
+        if(mIfFoundUpload == true) {
+             randomgUI = UUID.randomUUID().toString();
+            reference = storageRef.child("foundFiles/" + userUid + "/" + randomgUI);
+        }
+        else {
+             randomgUI = UUID.randomUUID().toString();
+            reference = storageRef.child("lostFiles/" + userUid + "/" + randomgUI);
+        }
+
+
+        reference.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
                 if(!task.isSuccessful()){
@@ -267,5 +356,123 @@ public class UploadFragment extends Fragment {
                 }
             }
         });
+        return randomgUI;
+    }
+
+    public void itemMatchingAlgorithm(){
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
+
+        ref.addListenerForSingleValueEvent(
+                new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        //Get map of users in datasnapshot
+                        try {
+                            collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        //handle databaseError
+                    }
+
+                    private void collectAllUsers(Map<String, Object> users) throws JSONException {
+
+                        //iterate through each user, ignoring their UID
+                        if (users != null)
+                            for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+                                Map singleItem = (Map) entry.getValue();
+
+                                double newItemLongitude = (double) singleItem.get("longitude");
+                                double newItemLatitude = (double) singleItem.get("latitude");
+
+
+
+                                double distanceDifference = calculateDistanceBetweenPoints(mItem.getLatitude(), newItemLatitude, mItem.getLongitude(), newItemLongitude);
+
+                                Log.i("UploadFragment", "Distance Difference: " + distanceDifference);
+
+                                // only adds to potentialMatches array if the objects are less than 500m apart and of the same category
+                                if(distanceDifference < 500 && mItem.getCategory().equals((String)singleItem.get("category")));
+                                {
+                                    mPotentialMatches.add((String) singleItem.get("imageLocationString"));
+                                }
+
+                            };
+                        Log.i("UploadFragment", "Long: " + mPotentialMatches.toString());
+                        }
+                    }
+                );
+    }
+
+    // returns the amount of meters between the two points
+    public double calculateDistanceBetweenPoints(double lat1, double lat2, double long1, double long2){
+            double earthRadius = 6371200; //meters
+            double differentLat = Math.toRadians(lat2-lat1);
+            double differenceLong = Math.toRadians(long2-long1);
+            double a = Math.sin(differentLat/2) * Math.sin(differentLat/2) +
+                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                            Math.sin(differenceLong/2) * Math.sin(differenceLong/2);
+            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            double dist = (double) (earthRadius * c);
+
+            return dist;
+    }
+
+    public double findTextSimiliary(String stringToCompare1, String stringToCompare2) throws JSONException, IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = new FormBody.Builder()
+                .add("text1" ,stringToCompare1)
+                .add("text2", stringToCompare2)
+                .build();
+
+        //i hid the API key
+        String api_key = BuildConfig.TEXT_KEY;
+
+
+        Request request = new Request.Builder()
+                .url("https://twinword-text-similarity-v1.p.rapidapi.com/similarity/")
+                .post(body)
+                .addHeader("content-type", "application/x-www-form-urlencoded")
+                .addHeader("X-RapidAPI-Key", api_key)
+                .addHeader("X-RapidAPI-Host", "twinword-text-similarity-v1.p.rapidapi.com")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            double score = 0;
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                String responseBody = response.body().string();
+                Log.i("UploadFragment", "Response body: "+responseBody);
+
+                JSONObject object = null;
+                try {
+                    object = new JSONObject(responseBody);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                     score = Double.parseDouble(object.get("similarity").toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        return 0;
     }
 }

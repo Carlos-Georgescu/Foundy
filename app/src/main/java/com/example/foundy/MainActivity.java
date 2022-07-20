@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.foundy.Adapters.SlideLayoutAdapter;
+
 public class MainActivity extends AppCompatActivity {
 
     private SlideLayoutAdapter sliderAsapter;

@@ -1,5 +1,7 @@
 package com.example.foundy.Structures;
 
+import java.util.ArrayList;
+
 public class User {
 
     private String email;
@@ -13,7 +15,6 @@ public class User {
         this.phoneNumber = phoneNumber;
         this.password = password;
     }
-
     public String getEmail() {
         return email;
     }
