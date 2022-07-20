@@ -121,16 +121,12 @@ public class HomeFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         lostItemImages.add(uri);
-                                        //mAdapter.notifyDataSetChanged();
                                         lostItemList.add(newItem);
                                         mAdapter.notifyDataSetChanged();
                                     }
                                 });
                             }
-
                     }
-
-
                 });
     }
 
