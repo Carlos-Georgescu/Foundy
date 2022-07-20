@@ -15,14 +15,16 @@ public class Item {
     private String answer1;
     private String answer2;
     private String imageLocationString;
-    public Boolean isFound;
-    public Boolean isLost;
+    private Boolean isFound;
+    private Boolean isLost;
+    private double latitude;
+    private double longitude;
 
     public Item(){
 
     }
 
-    public Item(String whatLost, String whereLost, String date, String category, String answer1, String answer2, String imageLocationString) {
+    public Item(String whatLost, String whereLost, String date, String category, String answer1, String answer2, String imageLocationString, double latitude, double longitude) {
         this.whatLost = whatLost;
         this.whereLost = whereLost;
         this.date = date;
@@ -30,6 +32,24 @@ public class Item {
         this.answer1 = answer1;
         this.answer2 = answer2;
         this.imageLocationString = imageLocationString;
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     public String getWhatLost() {
