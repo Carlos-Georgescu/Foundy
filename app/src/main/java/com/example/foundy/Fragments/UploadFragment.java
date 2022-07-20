@@ -12,7 +12,6 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,11 +22,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
-import com.example.foundy.Structures.LostItem;
+import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -44,7 +42,7 @@ import java.util.UUID;
 public class UploadFragment extends Fragment {
 
     DatePickerDialog.OnDateSetListener mSetListener;
-    LostItem mLostItem;
+    Item mItem;
     Boolean mIfFoundUpload = false;
     int  mNumOfImages = 0;
 
@@ -96,7 +94,7 @@ public class UploadFragment extends Fragment {
         whatLostText = rootView.findViewById(R.id.whatLostText);
         topText = rootView.findViewById(R.id.topText);
 
-        mLostItem = new LostItem();
+        mItem = new Item();
 
 
         Calendar calendar = Calendar.getInstance();
@@ -163,7 +161,7 @@ public class UploadFragment extends Fragment {
                 electronic.setBackgroundColor(Color.LTGRAY);
                 question1.setText("What kind of device is it?");
                 question2.setText("What model is it?");
-                mLostItem.setCategory("electronic");
+                mItem.setCategory("electronic");
             }
         });
 
@@ -173,7 +171,7 @@ public class UploadFragment extends Fragment {
                 jewlery.setBackgroundColor(Color.LTGRAY);
                 question1.setText("How color is it?");
                 question2.setText("How much is it worth?");
-                mLostItem.setCategory("jewlery");
+                mItem.setCategory("jewlery");
             }
         });
 
@@ -183,7 +181,7 @@ public class UploadFragment extends Fragment {
                 clothing.setBackgroundColor(Color.LTGRAY);
                 question1.setText("What brand is it?");
                 question2.setText("Any standout qualities about it?");
-                mLostItem.setCategory("clothing");
+                mItem.setCategory("clothing");
             }
         });
 
@@ -193,7 +191,7 @@ public class UploadFragment extends Fragment {
                 toys.setBackgroundColor(Color.LTGRAY);
                 question1.setText("What brand is it?");
                 question2.setText("What color is it?");
-                mLostItem.setCategory("toys");
+                mItem.setCategory("toys");
             }
         });
 
@@ -203,7 +201,7 @@ public class UploadFragment extends Fragment {
                 office.setBackgroundColor(Color.LTGRAY);
                 question1.setText("How many did you lose?");
                 question2.setText("Where are they from?");
-                mLostItem.setCategory("office");
+                mItem.setCategory("office");
             }
         });
 
@@ -213,7 +211,7 @@ public class UploadFragment extends Fragment {
                 other.setBackgroundColor(Color.LTGRAY);
                 question1.setText("How many did you lose?");
                 question2.setText("What color is it");
-                mLostItem.setCategory("other");
+                mItem.setCategory("other");
             }
         });
 
@@ -240,12 +238,12 @@ public class UploadFragment extends Fragment {
                 DatabaseReference mDatabase;
                 mDatabase = FirebaseDatabase.getInstance().getReference();
 
-                mLostItem.setImageLocationString(uploadImage(saveUriPic[0]));
-                mLostItem.setWhatLost(whatLostText.getText().toString());
-                mLostItem.setAnswer1(question1Answer.getText().toString());
-                mLostItem.setAnswer2(question2Answer.getText().toString());
-                mLostItem.setWhereLost(lostItemLocation.getText().toString());
-                mLostItem.setWhatLost(whatLostText.getText().toString());
+                mItem.setImageLocationString(uploadImage(saveUriPic[0]));
+                mItem.setWhatLost(whatLostText.getText().toString());
+                mItem.setAnswer1(question1Answer.getText().toString());
+                mItem.setAnswer2(question2Answer.getText().toString());
+                mItem.setWhereLost(lostItemLocation.getText().toString());
+                mItem.setWhatLost(whatLostText.getText().toString());
 
                 FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
 
@@ -253,10 +251,10 @@ public class UploadFragment extends Fragment {
 
                 if(mIfFoundUpload == false) {
 
-                    mDatabase.child("Users").child(userUid).child("LostItems").push().setValue(mLostItem);
+                    mDatabase.child("Users").child(userUid).child("LostItems").push().setValue(mItem);
                 }
                 else {
-                    mDatabase.child("Users").child(userUid).child("FoundItems").push().setValue(mLostItem);
+                    mDatabase.child("Users").child(userUid).child("FoundItems").push().setValue(mItem);
                 }
                 mNumOfImages++;
 
@@ -279,10 +277,7 @@ public class UploadFragment extends Fragment {
     }
 
     public void restoreFields(Bundle savedInstanceState){
-        if(savedInstanceState != null)
-        {
 
-        }
     }
 
     public String uploadImage(Uri image){
@@ -295,9 +290,6 @@ public class UploadFragment extends Fragment {
         FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
         String userUid = user.getUid();
         String randomgUI = "";
-
-        DatabaseReference mDatabase;
-        mDatabase = FirebaseDatabase.getInstance().getReference();
 
 
         Log.i("UploadFragment" ,"Value of number of images: "+mNumOfImages);
@@ -322,5 +314,10 @@ public class UploadFragment extends Fragment {
             }
         });
         return randomgUI;
+    }
+
+    public void itemMatchingAlgorithm(){
+        DatabaseReference mDatabase;
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 }

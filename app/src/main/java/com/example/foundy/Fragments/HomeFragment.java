@@ -16,11 +16,8 @@ import android.view.ViewGroup;
 
 import com.example.foundy.Adapters.LostItemAdapter;
 import com.example.foundy.R;
-import com.example.foundy.Structures.LostItem;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.tasks.OnCompleteListener;
+import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -29,10 +26,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +41,7 @@ public class HomeFragment extends Fragment {
 
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
-    private List<LostItem> lostItemList;
+    private List<Item> itemList;
     private final List<Uri> lostItemImages = new ArrayList<>();
 
 
@@ -65,10 +60,10 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mRvPosts = view.findViewById(R.id.rvPosts);
 
-        lostItemList = new ArrayList<>();
+        itemList = new ArrayList<>();
         // collectAllImage();
         queryPosts();
-        mAdapter = new LostItemAdapter(getContext(), lostItemList, lostItemImages);
+        mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages);
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -107,7 +102,7 @@ public class HomeFragment extends Fragment {
                                 Map singleUser = (Map) entry.getValue();
                                 //Get phone field and append to list
 
-                                LostItem newItem = new LostItem();
+                                Item newItem = new Item();
                                 newItem.setWhatLost((String) singleUser.get("whatLost"));
                                 newItem.setWhereLost((String) singleUser.get("whereLost"));
                                 newItem.setDate((String) singleUser.get("category"));
@@ -121,7 +116,7 @@ public class HomeFragment extends Fragment {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         lostItemImages.add(uri);
-                                        lostItemList.add(newItem);
+                                        itemList.add(newItem);
                                         mAdapter.notifyDataSetChanged();
                                     }
                                 });

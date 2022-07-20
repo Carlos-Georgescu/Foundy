@@ -15,19 +15,19 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foundy.R;
-import com.example.foundy.Structures.LostItem;
+import com.example.foundy.Structures.Item;
 
 import java.util.List;
 
 public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHolder> {
 
     private final Context mContext;
-    private final List<LostItem> mLostItemList;
+    private final List<Item> mItemList;
     private final List<Uri> mLostItemImages;
 
-    public LostItemAdapter(Context mContext, List<LostItem> mLostItemList,List<Uri> mLostItemImages ) {
+    public LostItemAdapter(Context mContext, List<Item> mItemList, List<Uri> mLostItemImages ) {
         this.mContext = mContext;
-        this.mLostItemList = mLostItemList;
+        this.mItemList = mItemList;
         this.mLostItemImages = mLostItemImages;
     }
 
@@ -40,18 +40,18 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        if(position < mLostItemList.size() && position<mLostItemImages.size()) {
-            LostItem lostItem = mLostItemList.get(position);
+        if(position < mItemList.size() && position<mLostItemImages.size()) {
+            Item item = mItemList.get(position);
             Uri uri = mLostItemImages.get(position);
             Log.i("LostItemAdapter", "Inside onBindViewHolder " + position + " list size: " + mLostItemImages.size());
             Log.i("LostItemAdapter", "Added image in position " + position);
-            holder.bind(lostItem, uri);
+            holder.bind(item, uri);
         }
     }
 
     @Override
     public int getItemCount() {
-        return mLostItemList.size();
+        return mItemList.size();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder{
@@ -69,12 +69,12 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
             whenText = itemView.findViewById(R.id.whenText);
         }
 
-        public void bind(LostItem lostItem, Uri uri) {
+        public void bind(Item item, Uri uri) {
             if(uri == null)
                 Log.i("LostItemAdapter" , "URI is null");
-            whatText.setText(lostItem.getWhatLost());
-            whereText.setText(lostItem.getWhereLost());
-            whenText.setText(lostItem.getDate());
+            whatText.setText(item.getWhatLost());
+            whereText.setText(item.getWhereLost());
+            whenText.setText(item.getDate());
             Glide.with(mContext)
                     .load(uri)
                     .apply(new RequestOptions().override(600, 200))

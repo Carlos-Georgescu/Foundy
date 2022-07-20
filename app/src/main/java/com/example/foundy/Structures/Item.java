@@ -7,7 +7,7 @@ import com.example.foundy.R;
 import java.net.URI;
 
 
-public class LostItem {
+public class Item {
     private String whatLost;
     private String whereLost;
     private String date;
@@ -15,12 +15,14 @@ public class LostItem {
     private String answer1;
     private String answer2;
     private String imageLocationString;
+    public Boolean isFound;
+    public Boolean isLost;
 
-    public LostItem(){
+    public Item(){
 
     }
 
-    public LostItem(String whatLost, String whereLost, String date, String category, String answer1, String answer2, String imageLocationString) {
+    public Item(String whatLost, String whereLost, String date, String category, String answer1, String answer2, String imageLocationString) {
         this.whatLost = whatLost;
         this.whereLost = whereLost;
         this.date = date;
@@ -54,6 +56,21 @@ public class LostItem {
         return answer2;
     }
 
+    public Boolean getFound() {
+        return isFound;
+    }
+
+    public void setFound(Boolean found) {
+        isFound = found;
+    }
+
+    public Boolean getLost() {
+        return isLost;
+    }
+
+    public void setLost(Boolean lost) {
+        isLost = lost;
+    }
 
     public String getImageLocationString() {
         return imageLocationString;
