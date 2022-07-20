@@ -2,7 +2,6 @@ package com.example.foundy.Fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -29,7 +28,6 @@ import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -65,60 +63,41 @@ public class UploadFragment extends Fragment {
     Item mItem;
     Boolean mIfFoundUpload = false;
     int  mNumOfImages = 0;
-    double itemLongitude;
-    double itemLatitude;
+    double mItemLongitude;
+    double mItemLatitude;
+    EditText mWhatLostText;
+    EditText mQuestion1Answer;
+    EditText mQuestion2Answer;
+    DatabaseReference mDatabase;
+    EditText mLostItemLocation;
+    Uri[] mSaveUriPic = new Uri[1];
+    String mUserUid;
     ArrayList<String> mPotentialMatches;
-
+    Button mElectronic;
+    Button mJewlery;
+    Button mClothing;
+    Button mToys;
+    EditText mSetDate;
+    Button mOffice;
+    Button mOther;
+    TextView mQuestion1;
+    TextView mQuestion2;
+    Button mOpenMapButton;
+    Button mTakePictureButton;
+    ImageView mItemPicture;
+    Button mHelpMeFind;
+    TextView mTopText;
+    View mRootView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.activity_upload_lost, container, false);
+         mRootView = inflater.inflate(R.layout.activity_upload_lost, container, false);
 
         restoreFields(savedInstanceState);
 
-        mPotentialMatches = new ArrayList<>();
-
-
-        Button openMapButton;
-        EditText lostItemLocation;
-        Button electronic;
-        Button jewlery;
-        Button clothing;
-        Button toys;
-        EditText setDate;
-        Button office;
-        Button other;
-        TextView question1;
-        TextView question2;
-        Button takePictureButton;
-        ImageView itemPicture;
-        Button helpMeFind;
-        EditText whatLostText;
-        EditText question1Answer;
-        EditText question2Answer;
-        Uri[] saveUriPic = new Uri[1];
-        TextView topText;
-
-        setDate = rootView.findViewById(R.id.selectDateText);
-        question1Answer = rootView.findViewById(R.id.question1Answer);
-        question2Answer = rootView.findViewById(R.id.question2Answer);
-        itemPicture = rootView.findViewById(R.id.itemPicture);
-        openMapButton = rootView.findViewById(R.id.openMapButton);
-        lostItemLocation = rootView.findViewById(R.id.lostItemLocation);
-        electronic = rootView.findViewById(R.id.electronic);
-        jewlery = rootView.findViewById(R.id.jewlery);
-        clothing = rootView.findViewById(R.id.clothing);
-        toys = rootView.findViewById(R.id.toys);
-        office = rootView.findViewById(R.id.office);
-        other = rootView.findViewById(R.id.other);
-        question1 = rootView.findViewById(R.id.question1);
-        question2 = rootView.findViewById(R.id.question2);
-        takePictureButton = rootView.findViewById(R.id.takePictureButton);
-        helpMeFind = rootView.findViewById(R.id.helpMeFind);
-        whatLostText = rootView.findViewById(R.id.whatLostText);
-        topText = rootView.findViewById(R.id.topText);
+        setUpFields();
 
         mItem = new Item();
 
@@ -134,8 +113,8 @@ public class UploadFragment extends Fragment {
             if (getArguments().getString("type").equals("found"))
             {
                 mIfFoundUpload = true;
-                topText.setText("ADD NEW FOUND ITEM");
-                helpMeFind.setText("LETS FIND IT");
+                mTopText.setText("ADD NEW FOUND ITEM");
+                mHelpMeFind.setText("LETS FIND IT");
             }
         }
         else {
@@ -143,7 +122,7 @@ public class UploadFragment extends Fragment {
         }
 
 
-        setDate.setOnClickListener(new View.OnClickListener() {
+        mSetDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), android.R.style.Theme_Holo_Light_Dialog_MinWidth, mSetListener, year, month, day);
@@ -157,12 +136,12 @@ public class UploadFragment extends Fragment {
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month++;
                 String date = dayOfMonth +" / " + month + " / " + year;
-                setDate.setText(date);
+                mSetDate.setText(date);
             }
         };
 
 
-        openMapButton.setOnClickListener(new View.OnClickListener() {
+        mOpenMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Fragment map = new MapsFragment();
@@ -178,84 +157,26 @@ public class UploadFragment extends Fragment {
 
         if (getArguments() != null) {
             String userLostItemLocation = getArguments().getString("location");
-            lostItemLocation.setText(userLostItemLocation);
+            mLostItemLocation.setText(userLostItemLocation);
 
-            itemLatitude = getArguments().getDouble("latitude");
-            itemLongitude = getArguments().getDouble("longitude");
+            mItemLatitude = getArguments().getDouble("latitude");
+            mItemLongitude = getArguments().getDouble("longitude");
 
         }
 
-        electronic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                electronic.setBackgroundColor(Color.LTGRAY);
-                question1.setText("What kind of device is it?");
-                question2.setText("What model is it?");
-                mItem.setCategory("electronic");
-            }
-        });
-
-        jewlery.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                jewlery.setBackgroundColor(Color.LTGRAY);
-                question1.setText("How color is it?");
-                question2.setText("How much is it worth?");
-                mItem.setCategory("jewlery");
-            }
-        });
-
-        clothing.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clothing.setBackgroundColor(Color.LTGRAY);
-                question1.setText("What brand is it?");
-                question2.setText("Any standout qualities about it?");
-                mItem.setCategory("clothing");
-            }
-        });
-
-        toys.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                toys.setBackgroundColor(Color.LTGRAY);
-                question1.setText("What brand is it?");
-                question2.setText("What color is it?");
-                mItem.setCategory("toys");
-            }
-        });
-
-        office.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                office.setBackgroundColor(Color.LTGRAY);
-                question1.setText("How many did you lose?");
-                question2.setText("Where are they from?");
-                mItem.setCategory("office");
-            }
-        });
-
-        other.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                other.setBackgroundColor(Color.LTGRAY);
-                question1.setText("How many did you lose?");
-                question2.setText("What color is it");
-                mItem.setCategory("other");
-            }
-        });
+        categoryButtonSelection();
 
         ActivityResultLauncher<String> mGetContent = registerForActivityResult(new ActivityResultContracts.GetContent(),
                 new ActivityResultCallback<Uri>() {
                     @Override
                     public void onActivityResult(Uri uri) {
-                        itemPicture.setImageURI(uri);
-                        saveUriPic[0] = uri;
+                        mItemPicture.setImageURI(uri);
+                        mSaveUriPic[0] = uri;
                     }
                 });
 
 
-        takePictureButton.setOnClickListener(new View.OnClickListener() {
+        mTakePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mGetContent.launch("image/*");
@@ -264,34 +185,21 @@ public class UploadFragment extends Fragment {
 
 
 
-        helpMeFind.setOnClickListener(new View.OnClickListener() {
+        mHelpMeFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                DatabaseReference mDatabase;
-                mDatabase = FirebaseDatabase.getInstance().getReference();
-                FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-                String userUid = user.getUid();
 
-                mItem.setImageLocationString(uploadImage(saveUriPic[0]));
-                mItem.setWhatLost(whatLostText.getText().toString());
-                mItem.setAnswer1(question1Answer.getText().toString());
-                mItem.setAnswer2(question2Answer.getText().toString());
-                mItem.setWhereLost(lostItemLocation.getText().toString());
-                mItem.setWhatLost(whatLostText.getText().toString());
-                mItem.setLatitude(itemLatitude);
-                mItem.setUserID(userUid);
-                mItem.setLongitude(itemLongitude);
 
+                setUpDatabaseAndFields();
 
                 if(mIfFoundUpload == false) {
 
-                    mDatabase.child("Users").child(userUid).child("LostItems").push().setValue(mItem);
+                    mDatabase.child("Users").child(mUserUid).child("LostItems").push().setValue(mItem);
                 }
                 else {
                     mDatabase.child("Users").child("FoundItems").push().setValue(mItem);
                 }
                 mNumOfImages++;
-
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
@@ -301,7 +209,107 @@ public class UploadFragment extends Fragment {
             }
         });
 
-        return rootView;
+        return mRootView;
+    }
+
+    private void setUpFields() {
+        mPotentialMatches = new ArrayList<>();
+        mSetDate = mRootView.findViewById(R.id.selectDateText);
+        mQuestion1Answer = mRootView.findViewById(R.id.question1Answer);
+        mQuestion2Answer = mRootView.findViewById(R.id.question2Answer);
+        mItemPicture = mRootView.findViewById(R.id.itemPicture);
+        mOpenMapButton = mRootView.findViewById(R.id.openMapButton);
+        mLostItemLocation = mRootView.findViewById(R.id.lostItemLocation);
+        mElectronic = mRootView.findViewById(R.id.electronic);
+        mJewlery = mRootView.findViewById(R.id.jewlery);
+        mClothing = mRootView.findViewById(R.id.clothing);
+        mToys = mRootView.findViewById(R.id.toys);
+        mOffice = mRootView.findViewById(R.id.office);
+        mOther = mRootView.findViewById(R.id.other);
+        mQuestion1 = mRootView.findViewById(R.id.question1);
+        mQuestion2 = mRootView.findViewById(R.id.question2);
+        mTakePictureButton = mRootView.findViewById(R.id.takePictureButton);
+        mHelpMeFind = mRootView.findViewById(R.id.helpMeFind);
+        mWhatLostText = mRootView.findViewById(R.id.whatLostText);
+        mTopText = mRootView.findViewById(R.id.topText);
+    }
+
+    private void categoryButtonSelection() {
+        mElectronic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mElectronic.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("What kind of device is it?");
+                mQuestion2.setText("What model is it?");
+                mItem.setCategory("electronic");
+            }
+        });
+
+        mJewlery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mJewlery.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("How color is it?");
+                mQuestion2.setText("How much is it worth?");
+                mItem.setCategory("jewlery");
+            }
+        });
+
+        mClothing.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mClothing.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("What brand is it?");
+                mQuestion2.setText("Any standout qualities about it?");
+                mItem.setCategory("clothing");
+            }
+        });
+
+        mToys.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mToys.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("What brand is it?");
+                mQuestion2.setText("What color is it?");
+                mItem.setCategory("toys");
+            }
+        });
+
+        mOffice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOffice.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("How many did you lose?");
+                mQuestion2.setText("Where are they from?");
+                mItem.setCategory("office");
+            }
+        });
+
+        mOther.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mOther.setBackgroundColor(Color.LTGRAY);
+                mQuestion1.setText("How many did you lose?");
+                mQuestion2.setText("What color is it");
+                mItem.setCategory("other");
+            }
+        });
+    }
+
+    private void setUpDatabaseAndFields() {
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+         mUserUid = user.getUid();
+
+        mItem.setImageLocationString(uploadImage(mSaveUriPic[0]));
+        mItem.setWhatLost(mWhatLostText.getText().toString());
+        mItem.setAnswer1(mQuestion1Answer.getText().toString());
+        mItem.setAnswer2(mQuestion2Answer.getText().toString());
+        mItem.setWhereLost(mLostItemLocation.getText().toString());
+        mItem.setWhatLost(mWhatLostText.getText().toString());
+        mItem.setLatitude(mItemLatitude);
+        mItem.setUserID(mUserUid);
+        mItem.setLongitude(mItemLongitude);
     }
 
     @Override
@@ -352,7 +360,6 @@ public class UploadFragment extends Fragment {
     }
 
     public void itemMatchingAlgorithm(){
-        DatabaseReference mDatabase;
 
         DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
 
@@ -405,13 +412,13 @@ public class UploadFragment extends Fragment {
     }
 
     // returns the amount of meters between the two points
-    public double calculateDistanceBetweenPoints(double lat1, double lat2, double lng1, double lng2){
-            double earthRadius = 6371000; //meters
-            double dLat = Math.toRadians(lat2-lat1);
-            double dLng = Math.toRadians(lng2-lng1);
-            double a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+    public double calculateDistanceBetweenPoints(double lat1, double lat2, double long1, double long2){
+            double earthRadius = 6371200; //meters
+            double differentLat = Math.toRadians(lat2-lat1);
+            double differenceLong = Math.toRadians(long2-long1);
+            double a = Math.sin(differentLat/2) * Math.sin(differentLat/2) +
                     Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                            Math.sin(dLng/2) * Math.sin(dLng/2);
+                            Math.sin(differenceLong/2) * Math.sin(differenceLong/2);
             double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
             double dist = (double) (earthRadius * c);
 
