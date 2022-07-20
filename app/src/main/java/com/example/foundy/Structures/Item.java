@@ -17,14 +17,16 @@ public class Item {
     private String imageLocationString;
     private Boolean isFound;
     private Boolean isLost;
+    private Boolean isMatched;
     private double latitude;
     private double longitude;
+    private String userID;
 
     public Item(){
 
     }
 
-    public Item(String whatLost, String whereLost, String date, String category, String answer1, String answer2, String imageLocationString, double latitude, double longitude) {
+    public Item(String whatLost, String whereLost, String date, String category, String answer1, String answer2, String imageLocationString, double latitude, double longitude, String userID, Boolean isMatched) {
         this.whatLost = whatLost;
         this.whereLost = whereLost;
         this.date = date;
@@ -34,10 +36,28 @@ public class Item {
         this.imageLocationString = imageLocationString;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.userID = userID;
+        this.isMatched = isMatched;
+    }
+
+    public Boolean getMatched() {
+        return isMatched;
+    }
+
+    public void setMatched(Boolean matched) {
+        isMatched = matched;
     }
 
     public double getLatitude() {
         return latitude;
+    }
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
     }
 
     public void setLatitude(double latitude) {

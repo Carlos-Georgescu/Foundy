@@ -243,6 +243,8 @@ public class UploadFragment extends Fragment {
             public void onClick(View v) {
                 DatabaseReference mDatabase;
                 mDatabase = FirebaseDatabase.getInstance().getReference();
+                FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+                String userUid = user.getUid();
 
                 mItem.setImageLocationString(uploadImage(saveUriPic[0]));
                 mItem.setWhatLost(whatLostText.getText().toString());
@@ -251,18 +253,16 @@ public class UploadFragment extends Fragment {
                 mItem.setWhereLost(lostItemLocation.getText().toString());
                 mItem.setWhatLost(whatLostText.getText().toString());
                 mItem.setLatitude(itemLatitude);
+                mItem.setUserID(userUid);
                 mItem.setLongitude(itemLongitude);
 
-                FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-
-                String userUid = user.getUid();
 
                 if(mIfFoundUpload == false) {
 
                     mDatabase.child("Users").child(userUid).child("LostItems").push().setValue(mItem);
                 }
                 else {
-                    mDatabase.child("Users").child(userUid).child("FoundItems").push().setValue(mItem);
+                    mDatabase.child("Users").child("FoundItems").push().setValue(mItem);
                 }
                 mNumOfImages++;
 
@@ -327,5 +327,9 @@ public class UploadFragment extends Fragment {
     public void itemMatchingAlgorithm(){
         DatabaseReference mDatabase;
         mDatabase = FirebaseDatabase.getInstance().getReference();
+
+
+
+
     }
 }
