@@ -47,15 +47,14 @@ public class HomeFragment extends Fragment {
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
     private List<LostItem> lostItemList;
-    private List<Uri> lostItemImages = new ArrayList<>();
+    private final List<Uri> lostItemImages = new ArrayList<>();
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_home, container, false);
-
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
         return view;
@@ -67,7 +66,7 @@ public class HomeFragment extends Fragment {
         mRvPosts = view.findViewById(R.id.rvPosts);
 
         lostItemList = new ArrayList<>();
-       // collectAllImage();
+        // collectAllImage();
         queryPosts();
         mAdapter = new LostItemAdapter(getContext(), lostItemList, lostItemImages);
         mRvPosts.setAdapter(mAdapter);
@@ -78,7 +77,7 @@ public class HomeFragment extends Fragment {
     private void queryPosts() {
 
 
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userUid = user.getUid();
 
         StorageReference listRef = FirebaseStorage.getInstance().getReference("lostFiles/" + userUid);
@@ -89,7 +88,7 @@ public class HomeFragment extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Get map of users in datasnapshot
-                        collectAllUsers((Map<String,Object>) dataSnapshot.getValue());
+                        collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
 
                     }
 
@@ -98,11 +97,11 @@ public class HomeFragment extends Fragment {
                         //handle databaseError
                     }
 
-                    private void collectAllUsers(Map<String,Object> users) {
+                    private void collectAllUsers(Map<String, Object> users) {
 
                         //iterate through each user, ignoring their UID
-                        if(users != null)
-                            for (Map.Entry<String, Object> entry : users.entrySet()){
+                        if (users != null)
+                            for (Map.Entry<String, Object> entry : users.entrySet()) {
 
                                 //Get user map
                                 Map singleUser = (Map) entry.getValue();
@@ -114,19 +113,19 @@ public class HomeFragment extends Fragment {
                                 newItem.setDate((String) singleUser.get("category"));
 
                                 String imageLocation = (String) singleUser.get("imageLocationString");
+                                Log.i("HomeFramgent", "image location " + imageLocation + "Image what " + newItem.getWhatLost());
+                                mAdapter.notifyDataSetChanged();
 
-                                Log.i("HomeFragment", "Location of list" +listRef.child("/"+imageLocation).toString());
-                                listRef.child("/"+imageLocation).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                Log.i("HomeFragment", "Location of list" + listRef.child("/" + imageLocation));
+                                listRef.child("/" + imageLocation).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
                                         lostItemImages.add(uri);
+                                        //mAdapter.notifyDataSetChanged();
+                                        lostItemList.add(newItem);
                                         mAdapter.notifyDataSetChanged();
                                     }
                                 });
-
-                                Log.i("HomeFramgment", "Name of item added"+newItem.getWhatLost());
-                                lostItemList.add(newItem);
-                                mAdapter.notifyDataSetChanged();
                             }
 
                     }

@@ -50,7 +50,7 @@ public class MapsFragment extends Fragment {
     Marker mCurrentMarker;
     Boolean mIfFoundUploadMaps;
 
-    private OnMapReadyCallback callback = new OnMapReadyCallback() {
+    private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 
         /**
          * Manipulates the map once available.

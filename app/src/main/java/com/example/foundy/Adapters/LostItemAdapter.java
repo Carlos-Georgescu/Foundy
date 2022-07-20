@@ -21,9 +21,9 @@ import java.util.List;
 
 public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHolder> {
 
-    private Context mContext;
-    private List<LostItem> mLostItemList;
-    private List<Uri> mLostItemImages;
+    private final Context mContext;
+    private final List<LostItem> mLostItemList;
+    private final List<Uri> mLostItemImages;
 
     public LostItemAdapter(Context mContext, List<LostItem> mLostItemList,List<Uri> mLostItemImages ) {
         this.mContext = mContext;
@@ -40,15 +40,13 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        LostItem lostItem = mLostItemList.get(position);
-        Uri uri = null;
-        Log.i("LostItemAdapter", "Inside onBindViewHolder "+position + " list size: "+mLostItemImages.size());
-        if(position < mLostItemImages.size()) {
-            Log.i("LostItemAdapter", "Added image in position "+position);
-            uri = mLostItemImages.get(position);
+        if(position < mLostItemList.size() && position<mLostItemImages.size()) {
+            LostItem lostItem = mLostItemList.get(position);
+            Uri uri = mLostItemImages.get(position);
+            Log.i("LostItemAdapter", "Inside onBindViewHolder " + position + " list size: " + mLostItemImages.size());
+            Log.i("LostItemAdapter", "Added image in position " + position);
+            holder.bind(lostItem, uri);
         }
-        Log.i("LostItemAdapter" ,"Path in the Adapter" + uri.toString());
-        holder.bind(lostItem, uri);
     }
 
     @Override
@@ -58,10 +56,10 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
 
     class ViewHolder extends RecyclerView.ViewHolder{
 
-        private ImageView lostImage;
-        private TextView whatText;
-        private TextView whereText;
-        private TextView whenText;
+        private final ImageView lostImage;
+        private final TextView whatText;
+        private final TextView whereText;
+        private final TextView whenText;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
