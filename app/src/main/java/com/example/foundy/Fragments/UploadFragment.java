@@ -45,6 +45,8 @@ public class UploadFragment extends Fragment {
     Item mItem;
     Boolean mIfFoundUpload = false;
     int  mNumOfImages = 0;
+    double itemLongitude;
+    double itemLatitude;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -153,6 +155,10 @@ public class UploadFragment extends Fragment {
         if (getArguments() != null) {
             String userLostItemLocation = getArguments().getString("location");
             lostItemLocation.setText(userLostItemLocation);
+
+            itemLatitude = getArguments().getDouble("latitude");
+            itemLongitude = getArguments().getDouble("longitude");
+
         }
 
         electronic.setOnClickListener(new View.OnClickListener() {
@@ -244,6 +250,8 @@ public class UploadFragment extends Fragment {
                 mItem.setAnswer2(question2Answer.getText().toString());
                 mItem.setWhereLost(lostItemLocation.getText().toString());
                 mItem.setWhatLost(whatLostText.getText().toString());
+                mItem.setLatitude(itemLatitude);
+                mItem.setLongitude(itemLongitude);
 
                 FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
 

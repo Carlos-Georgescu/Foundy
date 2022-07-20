@@ -49,6 +49,7 @@ public class MapsFragment extends Fragment {
     GoogleMap mMap;
     Marker mCurrentMarker;
     Boolean mIfFoundUploadMaps;
+    Button mDoneButton;
 
     private final OnMapReadyCallback callback = new OnMapReadyCallback() {
 
@@ -87,11 +88,14 @@ public class MapsFragment extends Fragment {
                 public void onMarkerDragEnd(@NonNull Marker marker) {
                     mCurrentLat = marker.getPosition().latitude;
                     mCurrentLong = marker.getPosition().longitude;
+
+                    Log.i("MapsFragment", "Current Long: "+mCurrentLong);
                 }
 
                 @Override
                 public void onMarkerDragStart(@NonNull Marker marker) {
-
+                    mCurrentLat = marker.getPosition().latitude;
+                    mCurrentLong = marker.getPosition().longitude;
                 }
             });
         }
@@ -124,10 +128,8 @@ public class MapsFragment extends Fragment {
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
 
-
-        Button doneButton;
         View rootView = inflater.inflate(R.layout.activity_map, container, false);
-        doneButton = rootView.findViewById(R.id.doneMapButton);
+        mDoneButton = rootView.findViewById(R.id.doneMapButton);
 
         if(getArguments() != null && getArguments().getString("type") != null)
         {
@@ -142,7 +144,64 @@ public class MapsFragment extends Fragment {
 
         Log.i("MapsFragement", "mIfFoundUploadMaps is: "+mIfFoundUploadMaps);
 
+        getCurrentLocation();
+        setUpCurrentLocationServices();
+        doneButtonClicked();
+        return rootView;
 
+    }
+
+    public void doneButtonClicked(){
+        mDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    String location = getMarkerLocation();
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("location", location);
+                    bundle.putDouble("latitude", mCurrentLat);
+                    bundle.putDouble("longitude", mCurrentLong);
+                    if(mIfFoundUploadMaps == true)
+                        bundle.putString("type", "found");
+                    Fragment fragment = new UploadFragment();
+                    fragment.setArguments(bundle);
+
+                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void getCurrentLocation(){
+        LocationRequest locationRequest;
+        LocationCallback locationCallback;
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(1);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                Location location = locationResult.getLocations().get(0);
+                if (location != null) {
+                    mCurrentLat = location.getLatitude();
+                    mCurrentLong = location.getLongitude();
+                    Log.i("MapsFragemnent" , "Initial lat: "+mCurrentLat + " initial long: "+mCurrentLong);
+                    setLatAndLong(location.getLatitude(), location.getLongitude());
+                }
+            }
+        };
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
+        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
+    }
+    public void setUpCurrentLocationServices(){
         ActivityResultLauncher<String[]> locationPermissionRequest =
                 registerForActivityResult(new ActivityResultContracts
                                 .RequestMultiplePermissions(), result -> {
@@ -164,49 +223,6 @@ public class MapsFragment extends Fragment {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
         });
-
-        LocationRequest locationRequest;
-        LocationCallback locationCallback;
-
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(1);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                if (locationResult == null) {
-                    return;
-                }
-                Location location = locationResult.getLocations().get(0);
-                if (location != null) {
-                    setLatAndLong(location.getLatitude(), location.getLongitude());
-                }
-            }
-        };
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getContext());
-        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
-
-        doneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                try {
-                    String location = getMarkerLocation();
-
-                    Bundle bundle = new Bundle();
-                    bundle.putString("location", location);
-                    if(mIfFoundUploadMaps == true)
-                        bundle.putString("type", "found");
-                    Fragment fragment = new UploadFragment();
-                    fragment.setArguments(bundle);
-
-                    getFragmentManager().beginTransaction().replace(R.id.fragment_container, fragment).commit();
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-        return rootView;
 
     }
 
