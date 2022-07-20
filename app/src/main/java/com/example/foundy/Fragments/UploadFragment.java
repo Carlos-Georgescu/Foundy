@@ -2,6 +2,7 @@ package com.example.foundy.Fragments;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -23,6 +24,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.foundy.BuildConfig;
 import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
@@ -40,10 +42,22 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
 import java.util.UUID;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class UploadFragment extends Fragment {
 
@@ -286,6 +300,7 @@ public class UploadFragment extends Fragment {
 
             }
         });
+
         return rootView;
     }
 
@@ -346,7 +361,11 @@ public class UploadFragment extends Fragment {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         //Get map of users in datasnapshot
-                        collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
+                        try {
+                            collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
                     }
 
@@ -355,7 +374,7 @@ public class UploadFragment extends Fragment {
                         //handle databaseError
                     }
 
-                    private void collectAllUsers(Map<String, Object> users) {
+                    private void collectAllUsers(Map<String, Object> users) throws JSONException {
 
                         //iterate through each user, ignoring their UID
                         if (users != null)
@@ -372,10 +391,12 @@ public class UploadFragment extends Fragment {
 
                                 Log.i("UploadFragment", "Distance Difference: " + distanceDifference);
 
-                                if(distanceDifference < 500)
+                                // only adds to potentialMatches array if the objects are less than 500m apart and of the same category
+                                if(distanceDifference < 500 && mItem.getCategory().equals((String)singleItem.get("category")));
                                 {
                                     mPotentialMatches.add((String) singleItem.get("imageLocationString"));
                                 }
+
                             };
                         Log.i("UploadFragment", "Long: " + mPotentialMatches.toString());
                         }
@@ -395,5 +416,56 @@ public class UploadFragment extends Fragment {
             double dist = (double) (earthRadius * c);
 
             return dist;
+    }
+
+    public double findTextSimiliary(String stringToCompare1, String stringToCompare2) throws JSONException, IOException {
+        OkHttpClient client = new OkHttpClient();
+
+        RequestBody body = new FormBody.Builder()
+                .add("text1" ,stringToCompare1)
+                .add("text2", stringToCompare2)
+                .build();
+
+        //i hid the API key
+        String api_key = BuildConfig.TEXT_KEY;
+
+
+        Request request = new Request.Builder()
+                .url("https://twinword-text-similarity-v1.p.rapidapi.com/similarity/")
+                .post(body)
+                .addHeader("content-type", "application/x-www-form-urlencoded")
+                .addHeader("X-RapidAPI-Key", api_key)
+                .addHeader("X-RapidAPI-Host", "twinword-text-similarity-v1.p.rapidapi.com")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            double score = 0;
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+
+                String responseBody = response.body().string();
+                Log.i("UploadFragment", "Response body: "+responseBody);
+
+                JSONObject object = null;
+                try {
+                    object = new JSONObject(responseBody);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                     score = Double.parseDouble(object.get("similarity").toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        return 0;
     }
 }
