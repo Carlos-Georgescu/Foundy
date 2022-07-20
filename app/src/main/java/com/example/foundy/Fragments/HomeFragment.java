@@ -109,14 +109,18 @@ public class HomeFragment extends Fragment {
 
                                 String imageLocation = (String) singleUser.get("imageLocationString");
                                 Log.i("HomeFramgent", "image location " + imageLocation + "Image what " + newItem.getWhatLost());
+
+                                itemList.add(newItem);
+                                lostItemImages.add(null);
                                 mAdapter.notifyDataSetChanged();
+
+                                int index = itemList.size() - 1;
 
                                 Log.i("HomeFragment", "Location of list" + listRef.child("/" + imageLocation));
                                 listRef.child("/" + imageLocation).getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
                                     @Override
                                     public void onSuccess(Uri uri) {
-                                        lostItemImages.add(uri);
-                                        itemList.add(newItem);
+                                        lostItemImages.set(index, uri);
                                         mAdapter.notifyDataSetChanged();
                                     }
                                 });
