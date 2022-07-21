@@ -375,7 +375,7 @@ public class UploadFragment extends Fragment {
                         //Get map of users in datasnapshot
                         try {
                             collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
-                        } catch (JSONException e) {
+                        } catch (JSONException | IOException e) {
                             e.printStackTrace();
                         }
 
@@ -386,7 +386,7 @@ public class UploadFragment extends Fragment {
                         //handle databaseError
                     }
 
-                    private void collectAllUsers(Map<String, Object> users) throws JSONException {
+                    private void collectAllUsers(Map<String, Object> users) throws JSONException, IOException {
 
                         //iterate through each user, ignoring their UID
                         if (users != null)
@@ -421,9 +421,8 @@ public class UploadFragment extends Fragment {
 
                                     mPotentialMatches.add(uniqueID);
                                     double score = calculateOverallScore(answer1, answer2, day, month, year);
+                                    Log.i("UploadFramgment" , "Final score: " + score);
                                 }
-
-
 
                             };
                         Log.i("UploadFragment", "Long: " + mPotentialMatches.toString());
@@ -432,7 +431,7 @@ public class UploadFragment extends Fragment {
                 );
     }
 
-    private double calculateOverallScore(String answer1, String answer2, int foundYear, int foundMonth, int foundDay) {
+    private double calculateOverallScore(String answer1, String answer2, int foundYear, int foundMonth, int foundDay) throws JSONException, IOException {
         double textSimily1 = findTextSimiliary(mQuestion1Answer.getText().toString(), answer1);
         double textSimily2 = findTextSimiliary(mQuestion2Answer.getText().toString(), answer2);
 
@@ -474,7 +473,7 @@ public class UploadFragment extends Fragment {
 
         //i hid the API key
         String api_key = BuildConfig.TEXT_KEY;
-
+        final double[] score = {0};
 
         Request request = new Request.Builder()
                 .url("https://twinword-text-similarity-v1.p.rapidapi.com/similarity/")
@@ -485,7 +484,7 @@ public class UploadFragment extends Fragment {
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
-            double score = 0;
+
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
 
@@ -505,14 +504,14 @@ public class UploadFragment extends Fragment {
                 }
 
                 try {
-                     score = Double.parseDouble(object.get("similarity").toString());
+                     score[0] = Double.parseDouble(object.get("similarity").toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         });
 
-        return 0;
+        return score[0];
     }
 
     // returns a value between 0 - 1, 1 being very similiar, 0 being not similar at all, year 1 is the lost date
