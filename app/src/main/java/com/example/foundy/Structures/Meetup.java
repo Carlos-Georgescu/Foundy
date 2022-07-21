@@ -1,12 +1,12 @@
 package com.example.foundy.Structures;
 
 public class Meetup {
-    public String city;
-    public String state;
-    public String locationName;
-    public int hour;
-    public int minute;
-    public String estimatedTime;
+    private String city;
+    private String state;
+    private String locationName;
+    private int hour;
+    private int minute;
+    private String estimatedTime;
 
     public Meetup(String city, String state, String locationName, int hour, int minute, String estimatedTime) {
         this.city = city;
