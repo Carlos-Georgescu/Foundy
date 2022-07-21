@@ -420,7 +420,7 @@ public class UploadFragment extends Fragment {
 
 
                                     mPotentialMatches.add(uniqueID);
-                                    double score = calculateOverallScore(answer1, answer2, day, month, year);
+                                    double score = calculateOverallScore(answer1, answer2, year, month, day);
                                     Log.i("UploadFramgment" , "Final score: " + score);
                                 }
 
@@ -437,6 +437,8 @@ public class UploadFragment extends Fragment {
 
         double finalTextSimilyScore = (textSimily1 + textSimily2) / 2;
 
+        Log.i("UploadFragment", "finalTextSimilyScore  == " + finalTextSimilyScore);
+
         String date = mSetDate.getText().toString();
         String str[] = date.split(" / ");
 
@@ -444,7 +446,11 @@ public class UploadFragment extends Fragment {
         int lostMonth = Integer.parseInt(str[1]);
         int lostYear = Integer.parseInt(str[2]);
 
-        double dateScore =  dateSimilarityAlgorithm(lostYear, foundYear,lostMonth, foundMonth, lostDay, foundDay);
+        Log.i("UploadFragment", "Calling date with  parameters years " + lostYear + " " +foundYear + " month: " + lostMonth + " " + foundMonth + " days: " + lostDay  + " " + foundDay);
+
+        double dateScore =  dateSimilarityAlgorithm(lostYear, foundYear, lostDay, foundDay , lostMonth, foundMonth);
+
+        Log.i("dateScore", "dateScore  == " + dateScore);
 
         return finalTextSimilyScore * 0.4 + dateScore * 0.6;
     }
@@ -504,6 +510,7 @@ public class UploadFragment extends Fragment {
                 }
 
                 try {
+                    Log.i("HomeFragment" , "text similiary from API " + Double.parseDouble(object.get("similarity").toString()));
                      score[0] = Double.parseDouble(object.get("similarity").toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -515,6 +522,7 @@ public class UploadFragment extends Fragment {
     }
 
     // returns a value between 0 - 1, 1 being very similiar, 0 being not similar at all, year 1 is the lost date
+    // lostDate is AFTER found date
     public double dateSimilarityAlgorithm(int year1, int year2, int day1, int day2, int month1, int month2)
     {
         if(year1 - year2 > 1)
@@ -539,6 +547,8 @@ public class UploadFragment extends Fragment {
             counter++;
         }
 
+        Log.i("UploadFragment" , "Counter amount: " + counter);
+
         if(month2 != month1)
         {
            counter += numInMonth(month2, year2);
@@ -546,8 +556,11 @@ public class UploadFragment extends Fragment {
 
         if(counter > 20)
             return 0.0;
-        else
-            return counter / 20.0;
+        else {
+            if(counter == 0)
+                return 1;
+            return 1 - (counter / 20.0);
+        }
 
     }
 
