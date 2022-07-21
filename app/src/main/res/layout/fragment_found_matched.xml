@@ -5,10 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".Fragments.FoundMatched">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvFoundItems"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="found matched" />
-
+        android:layout_height="match_parent" />
 </FrameLayout>

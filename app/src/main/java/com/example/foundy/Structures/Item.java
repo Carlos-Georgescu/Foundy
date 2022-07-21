@@ -94,21 +94,6 @@ public class Item {
         return answer2;
     }
 
-    public Boolean getFound() {
-        return isFound;
-    }
-
-    public void setFound(Boolean found) {
-        isFound = found;
-    }
-
-    public Boolean getLost() {
-        return isLost;
-    }
-
-    public void setLost(Boolean lost) {
-        isLost = lost;
-    }
 
     public String getImageLocationString() {
         return imageLocationString;

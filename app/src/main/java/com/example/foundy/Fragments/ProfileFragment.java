@@ -41,9 +41,9 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
                 if(position == 0)
-                    tab.setText("Lost Matched");
-                else
                     tab.setText("Found Matched");
+                else
+                    tab.setText("Lost Matched");
             }
         }).attach();
 

@@ -32,11 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomeFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class HomeFragment extends Fragment {
 
     private RecyclerView mRvPosts;
@@ -61,7 +57,6 @@ public class HomeFragment extends Fragment {
         mRvPosts = view.findViewById(R.id.rvPosts);
 
         itemList = new ArrayList<>();
-        // collectAllImage();
         queryPosts();
         mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages);
         mRvPosts.setAdapter(mAdapter);
