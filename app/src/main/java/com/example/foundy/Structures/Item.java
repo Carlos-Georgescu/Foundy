@@ -15,8 +15,6 @@ public class Item {
     private String answer1;
     private String answer2;
     private String imageLocationString;
-    private Boolean isFound;
-    private Boolean isLost;
     private Boolean isMatched;
     private double latitude;
     private double longitude;

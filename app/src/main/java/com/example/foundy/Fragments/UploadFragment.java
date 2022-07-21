@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import okhttp3.Call;
@@ -88,6 +89,8 @@ public class UploadFragment extends Fragment {
     Button mHelpMeFind;
     TextView mTopText;
     View mRootView;
+    TreeMap<Double,String> mMapOfScores = new TreeMap<Double,String>();
+    DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -135,7 +138,7 @@ public class UploadFragment extends Fragment {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
                 month++;
-                String date = dayOfMonth +" / " + month + " / " + year;
+                String date = dayOfMonth + " / " + month + " / " + year;
                 mSetDate.setText(date);
             }
         };
@@ -307,8 +310,10 @@ public class UploadFragment extends Fragment {
         mItem.setAnswer2(mQuestion2Answer.getText().toString());
         mItem.setWhereLost(mLostItemLocation.getText().toString());
         mItem.setWhatLost(mWhatLostText.getText().toString());
+        mItem.setDate(mSetDate.getText().toString());
         mItem.setLatitude(mItemLatitude);
         mItem.setUserID(mUserUid);
+        mItem.setMatched(false);
         mItem.setLongitude(mItemLongitude);
     }
 
@@ -361,9 +366,9 @@ public class UploadFragment extends Fragment {
 
     public void itemMatchingAlgorithm(){
 
-        DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
 
-        ref.addListenerForSingleValueEvent(
+
+        mRef.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -401,14 +406,48 @@ public class UploadFragment extends Fragment {
                                 // only adds to potentialMatches array if the objects are less than 500m apart and of the same category
                                 if(distanceDifference < 500 && mItem.getCategory().equals((String)singleItem.get("category")));
                                 {
-                                    mPotentialMatches.add((String) singleItem.get("imageLocationString"));
+                                    String uniqueID = (String) singleItem.get("imageLocationString");
+                                    String answer1 = (String) singleItem.get("answer1");
+                                    String answer2 = (String) singleItem.get("answer2");
+                                    String date = (String) singleItem.get("date");
+
+                                    String str[] = date.split(" / ");
+
+                                    int day = Integer.parseInt(str[0]);
+                                    int month = Integer.parseInt(str[1]);
+                                    int year = Integer.parseInt(str[2]);
+
+
+
+                                    mPotentialMatches.add(uniqueID);
+                                    double score = calculateOverallScore(answer1, answer2, day, month, year);
                                 }
+
+
 
                             };
                         Log.i("UploadFragment", "Long: " + mPotentialMatches.toString());
                         }
                     }
                 );
+    }
+
+    private double calculateOverallScore(String answer1, String answer2, int foundYear, int foundMonth, int foundDay) {
+        double textSimily1 = findTextSimiliary(mQuestion1Answer.getText().toString(), answer1);
+        double textSimily2 = findTextSimiliary(mQuestion2Answer.getText().toString(), answer2);
+
+        double finalTextSimilyScore = (textSimily1 + textSimily2) / 2;
+
+        String date = mSetDate.getText().toString();
+        String str[] = date.split(" / ");
+
+        int lostDay = Integer.parseInt(str[0]);
+        int lostMonth = Integer.parseInt(str[1]);
+        int lostYear = Integer.parseInt(str[2]);
+
+        double dateScore =  dateSimilarityAlgorithm(lostYear, foundYear,lostMonth, foundMonth, lostDay, foundDay);
+
+        return finalTextSimilyScore * 0.4 + dateScore * 0.6;
     }
 
     // returns the amount of meters between the two points
@@ -477,7 +516,7 @@ public class UploadFragment extends Fragment {
     }
 
     // returns a value between 0 - 1, 1 being very similiar, 0 being not similar at all, year 1 is the lost date
-    public int dateSimilarityAlgorithm(int year1, int year2, int day1, int day2, int month1, int month2)
+    public double dateSimilarityAlgorithm(int year1, int year2, int day1, int day2, int month1, int month2)
     {
         if(year1 - year2 > 1)
             return 0;
@@ -507,9 +546,9 @@ public class UploadFragment extends Fragment {
         }
 
         if(counter > 20)
-            return 0;
+            return 0.0;
         else
-            return counter / 20;
+            return counter / 20.0;
 
     }
 
