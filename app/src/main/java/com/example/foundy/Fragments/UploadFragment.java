@@ -425,14 +425,11 @@ public class UploadFragment extends Fragment {
                     }
                 }
         );
-        if (mMapOfScores.size() > 0) {
+        if (mMapOfScores.size() > 0 && mMapOfScores.lastKey() > 0) {
             mItem.setMatched(true);
             String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            Map<String, Object> map = new HashMap<>();
-            map.put("score", 5);
-            rootRef.child("test").child("Name1").updateChildren(map);
 
 
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
@@ -468,7 +465,7 @@ public class UploadFragment extends Fragment {
                                         rootRef.child("Users").child("FoundItems").child(childName).updateChildren(map);
                                     }
                                 }
-                        });
+                        }
                     });
         }
     }
