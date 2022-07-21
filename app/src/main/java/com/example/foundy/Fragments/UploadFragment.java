@@ -28,12 +28,11 @@ import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
 import com.example.foundy.Structures.Meetup;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.LatLngBounds;
+
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -50,6 +49,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -59,6 +59,7 @@ import java.util.UUID;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -157,6 +158,7 @@ public class UploadFragment extends Fragment {
                 map.setArguments(bundle);
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
 
+                findLocation(37.386051,  -122.083855, 37.386051, -122.083855, "Mountain View");
             }
         });
 
@@ -513,16 +515,31 @@ public class UploadFragment extends Fragment {
     }
 
 
-    public Meetup findLocation(int lat1, int lat2, int longg1, int longg2)
+    public Meetup findLocation(double lat1, double lat2, double longg1, double longg2, String city)
     {
 
-        LatLng l1 = new LatLng(lat1, longg1);
-        LatLng l2 = new LatLng(lat1, longg1);
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();;
 
-        LatLngBounds map = new LatLngBounds(l1,l2);
-        LatLng center = map.getCenter();
+        MediaType mediaType = MediaType.parse("text/plain");
+        RequestBody body = RequestBody.create("", mediaType);
+        Request request = new Request.Builder()
+                .url("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.386051%2C-122.083855&radius=1500&type=restaurant&keyword=store&key=" + BuildConfig.MAPS_API_KEY)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                Log.i("UploadFragment", "Response2: " + response.body().string());
 
 
+            }
+        });
+        return null;
     }
 
     public double findTextSimiliary(String stringToCompare1, String stringToCompare2) throws JSONException, IOException {
