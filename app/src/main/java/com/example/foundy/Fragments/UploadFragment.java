@@ -27,6 +27,10 @@ import com.example.foundy.BuildConfig;
 import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
+import com.example.foundy.Structures.Meetup;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -506,6 +510,19 @@ public class UploadFragment extends Fragment {
         double dist = (double) (earthRadius * c);
 
         return dist;
+    }
+
+
+    public Meetup findLocation(int lat1, int lat2, int longg1, int longg2)
+    {
+
+        LatLng l1 = new LatLng(lat1, longg1);
+        LatLng l2 = new LatLng(lat1, longg1);
+
+        LatLngBounds map = new LatLngBounds(l1,l2);
+        LatLng center = map.getCenter();
+
+
     }
 
     public double findTextSimiliary(String stringToCompare1, String stringToCompare2) throws JSONException, IOException {

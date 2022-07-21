@@ -7,14 +7,21 @@ public class Meetup {
     private int hour;
     private int minute;
     private String estimatedTime;
+    public String lostUID;
+    public String foundUID;
 
-    public Meetup(String city, String state, String locationName, int hour, int minute, String estimatedTime) {
+    public Meetup() {
+    }
+
+    public Meetup(String city, String state, String locationName, int hour, int minute, String estimatedTime, String lostUID, String foundUID) {
         this.city = city;
         this.state = state;
         this.locationName = locationName;
         this.hour = hour;
         this.minute = minute;
         this.estimatedTime = estimatedTime;
+        this.lostUID = lostUID;
+        this.foundUID = foundUID;
     }
 
     public String getCity() {
