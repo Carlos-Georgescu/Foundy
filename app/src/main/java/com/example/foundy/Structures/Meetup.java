@@ -7,10 +7,26 @@ public class Meetup {
     private int hour;
     private int minute;
     private String estimatedTime;
-    public String lostUID;
-    public String foundUID;
+    private String lostUID;
+    private String foundUID;
 
     public Meetup() {
+    }
+
+    public String getLostUID() {
+        return lostUID;
+    }
+
+    public void setLostUID(String lostUID) {
+        this.lostUID = lostUID;
+    }
+
+    public String getFoundUID() {
+        return foundUID;
+    }
+
+    public void setFoundUID(String foundUID) {
+        this.foundUID = foundUID;
     }
 
     public Meetup(String city, String state, String locationName, int hour, int minute, String estimatedTime, String lostUID, String foundUID) {

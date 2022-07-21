@@ -44,6 +44,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -158,7 +159,7 @@ public class UploadFragment extends Fragment {
                 map.setArguments(bundle);
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
 
-                findLocation(37.386051,  -122.083855, 37.386051, -122.083855, "Mountain View");
+
             }
         });
 
@@ -199,6 +200,7 @@ public class UploadFragment extends Fragment {
 
                 setUpDatabaseAndFields();
                 itemMatchingAlgorithm();
+                findLocation(37.386051,  -122.083855, 37.386051, -122.083855, "Mountain View");
 
                 if (mIfFoundUpload == false) {
 
@@ -369,6 +371,54 @@ public class UploadFragment extends Fragment {
     public void itemMatchingAlgorithm() {
 
 
+        filteringAlgorithm();
+
+        if (mMapOfScores.size() > 0 && mMapOfScores.lastKey() > 0) {
+            mItem.setMatched(true);
+            String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
+
+            ref.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Get map of users in datasnapshot
+                            collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            //handle databaseError
+                        }
+
+                        private void collectAllUsers(Map<String, Object> users) {
+
+                            //iterate through each user, ignoring their UID
+                            if (users != null)
+                                for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+                                    //Get user map
+                                    Map singleUser = (Map) entry.getValue();
+                                    String childName = entry.getKey();
+
+                                    if(singleUser.get("imageLocationString").toString().equals(keyOfFoundItem))
+                                    {
+                                        singleUser.get("userID");
+                                        Map<String, Object> map = new HashMap<>();
+                                        map.put("matched", true);
+                                        rootRef.child("Users").child("FoundItems").child(childName).updateChildren(map);
+                                    }
+                                }
+                        }
+                    });
+        }
+    }
+
+    private void filteringAlgorithm() {
         mRef.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -431,49 +481,6 @@ public class UploadFragment extends Fragment {
                     }
                 }
         );
-        if (mMapOfScores.size() > 0 && mMapOfScores.lastKey() > 0) {
-            mItem.setMatched(true);
-            String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
-
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
-
-            ref.addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            //Get map of users in datasnapshot
-                            collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            //handle databaseError
-                        }
-
-                        private void collectAllUsers(Map<String, Object> users) {
-
-                            //iterate through each user, ignoring their UID
-                            if (users != null)
-                                for (Map.Entry<String, Object> entry : users.entrySet()) {
-
-                                    //Get user map
-                                    Map singleUser = (Map) entry.getValue();
-                                    String childName = entry.getKey();
-
-                                    if(singleUser.get("imageLocationString").toString().equals(keyOfFoundItem))
-                                    {
-                                        Map<String, Object> map = new HashMap<>();
-                                        map.put("matched", true);
-                                        rootRef.child("Users").child("FoundItems").child(childName).updateChildren(map);
-                                    }
-                                }
-                        }
-                    });
-        }
     }
 
     private double calculateOverallScore(String answer1, String answer2, int foundYear, int foundMonth, int foundDay) throws JSONException, IOException {
@@ -517,6 +524,7 @@ public class UploadFragment extends Fragment {
 
     public Meetup findLocation(double lat1, double lat2, double longg1, double longg2, String city)
     {
+        Meetup meetup = new Meetup();
 
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();;
@@ -534,8 +542,32 @@ public class UploadFragment extends Fragment {
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
-                Log.i("UploadFragment", "Response2: " + response.body().string());
+                String responseBody = response.body().string();
+                //Log.i("UploadFragment", "Response2: " + responseBody);
 
+                try {
+                    JSONObject object = new JSONObject(responseBody);
+                    boolean found == false;
+                    while(found == false) {
+
+                        JSONObject jsonObject = (JSONObject) object.getJSONArray("results").get(0);
+                        //check if building is open
+                        boolean ifOpen = jsonObject.getString("business_status").equals("OPERATIONAL");
+                        if(ifOpen) {
+                            found == true;
+                            meetup.setCity(jsonObject.getString("vicinity"));
+                            meetup.setLocationName(jsonObject.getString("name"));
+                            Log.i("UploadFragment1", object.getJSONArray("results").get(0));
+                        }
+                    }
+
+                    meetup.setHour(5);
+                    meetup.setMinute(30);
+
+                    meetup.setFoundUID();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
 
             }
         });
