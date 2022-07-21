@@ -475,4 +475,58 @@ public class UploadFragment extends Fragment {
 
         return 0;
     }
+
+    // returns a value between 0 - 1, 1 being very similiar, 0 being not similar at all, year 1 is the lost date
+    public int dateSimilarityAlgorithm(int year1, int year2, int day1, int day2, int month1, int month2)
+    {
+        if(year1 - year2 > 1)
+            return 0;
+
+
+        int counter = 0;
+
+        while(day2 < day1)
+        {
+            if(numInMonth(month2,  year2) == day2)
+            {
+                day2 = 1;
+                if(month2 == 12)
+                    month2 = 1;
+                else
+                    month2++;
+            }
+            else
+                day2++;
+
+            counter++;
+        }
+
+        if(month2 != month1)
+        {
+           counter += numInMonth(month2, year2);
+        }
+
+        if(counter > 20)
+            return 0;
+        else
+            return counter / 20;
+
+    }
+
+    public int numInMonth(int month, int year)
+    {
+        if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
+            return 31;
+        if(month == 2 && isLeapYear(year))
+            return 29;
+        if(month == 2 && isLeapYear(year) == false)
+            return 28;
+
+        return  30;
+    }
+
+    public boolean isLeapYear(int year)
+    {
+        return (((year % 4 == 0) && (year % 100!= 0)) || (year%400 == 0));
+    }
 }
