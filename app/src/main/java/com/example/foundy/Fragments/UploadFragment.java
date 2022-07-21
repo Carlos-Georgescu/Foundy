@@ -28,6 +28,7 @@ import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -46,6 +47,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -63,7 +65,7 @@ public class UploadFragment extends Fragment {
     DatePickerDialog.OnDateSetListener mSetListener;
     Item mItem;
     Boolean mIfFoundUpload = false;
-    int  mNumOfImages = 0;
+    int mNumOfImages = 0;
     double mItemLongitude;
     double mItemLatitude;
     EditText mWhatLostText;
@@ -89,14 +91,14 @@ public class UploadFragment extends Fragment {
     Button mHelpMeFind;
     TextView mTopText;
     View mRootView;
-    TreeMap<Double,String> mMapOfScores = new TreeMap<Double,String>();
+    TreeMap<Double, String> mMapOfScores = new TreeMap<Double, String>();
     DatabaseReference mRef = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-         mRootView = inflater.inflate(R.layout.activity_upload_lost, container, false);
+        mRootView = inflater.inflate(R.layout.activity_upload_lost, container, false);
 
         restoreFields(savedInstanceState);
 
@@ -111,16 +113,13 @@ public class UploadFragment extends Fragment {
         final int day = calendar.get(Calendar.DAY_OF_MONTH);
 
 
-        if(getArguments() != null && getArguments().getString("type") != null)
-        {
-            if (getArguments().getString("type").equals("found"))
-            {
+        if (getArguments() != null && getArguments().getString("type") != null) {
+            if (getArguments().getString("type").equals("found")) {
                 mIfFoundUpload = true;
                 mTopText.setText("ADD NEW FOUND ITEM");
                 mHelpMeFind.setText("LETS FIND IT");
             }
-        }
-        else {
+        } else {
             mIfFoundUpload = false;
         }
 
@@ -149,7 +148,7 @@ public class UploadFragment extends Fragment {
             public void onClick(View v) {
                 Fragment map = new MapsFragment();
                 Bundle bundle = new Bundle();
-                if(mIfFoundUpload == true)
+                if (mIfFoundUpload == true)
                     bundle.putString("type", "found");
                 map.setArguments(bundle);
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
@@ -187,19 +186,18 @@ public class UploadFragment extends Fragment {
         });
 
 
-
         mHelpMeFind.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
 
                 setUpDatabaseAndFields();
+                itemMatchingAlgorithm();
 
-                if(mIfFoundUpload == false) {
+                if (mIfFoundUpload == false) {
 
                     mDatabase.child("Users").child(mUserUid).child("LostItems").push().setValue(mItem);
-                }
-                else {
+                } else {
                     mDatabase.child("Users").child("FoundItems").push().setValue(mItem);
                 }
                 mNumOfImages++;
@@ -207,7 +205,6 @@ public class UploadFragment extends Fragment {
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
                 startActivity(i);
 
-                itemMatchingAlgorithm();
 
             }
         });
@@ -301,8 +298,8 @@ public class UploadFragment extends Fragment {
 
     private void setUpDatabaseAndFields() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
-         mUserUid = user.getUid();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        mUserUid = user.getUid();
 
         mItem.setImageLocationString(uploadImage(mSaveUriPic[0]));
         mItem.setWhatLost(mWhatLostText.getText().toString());
@@ -324,31 +321,30 @@ public class UploadFragment extends Fragment {
         //Save the fragment's state here
     }
 
-    public void restoreFields(Bundle savedInstanceState){
+    public void restoreFields(Bundle savedInstanceState) {
 
     }
 
-    public String uploadImage(Uri image){
+    public String uploadImage(Uri image) {
         // Create a Cloud Storage reference from the app
         FirebaseStorage storage = FirebaseStorage.getInstance();
 
 
         StorageReference storageRef = storage.getReference();
         StorageReference reference;
-        FirebaseUser user= FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         String userUid = user.getUid();
         String randomgUI = "";
 
 
-        Log.i("UploadFragment" ,"Value of number of images: "+mNumOfImages);
+        Log.i("UploadFragment", "Value of number of images: " + mNumOfImages);
 
 
-        if(mIfFoundUpload == true) {
-             randomgUI = UUID.randomUUID().toString();
+        if (mIfFoundUpload == true) {
+            randomgUI = UUID.randomUUID().toString();
             reference = storageRef.child("foundFiles/" + userUid + "/" + randomgUI);
-        }
-        else {
-             randomgUI = UUID.randomUUID().toString();
+        } else {
+            randomgUI = UUID.randomUUID().toString();
             reference = storageRef.child("lostFiles/" + userUid + "/" + randomgUI);
         }
 
@@ -356,16 +352,15 @@ public class UploadFragment extends Fragment {
         reference.putFile(image).addOnCompleteListener(new OnCompleteListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<UploadTask.TaskSnapshot> task) {
-                if(!task.isSuccessful()){
-                    Log.e("UploadFragment","Error uploading photo");
+                if (!task.isSuccessful()) {
+                    Log.e("UploadFragment", "Error uploading photo");
                 }
             }
         });
         return randomgUI;
     }
 
-    public void itemMatchingAlgorithm(){
-
+    public void itemMatchingAlgorithm() {
 
 
         mRef.addListenerForSingleValueEvent(
@@ -398,13 +393,13 @@ public class UploadFragment extends Fragment {
                                 double newItemLatitude = (double) singleItem.get("latitude");
 
 
-
                                 double distanceDifference = calculateDistanceBetweenPoints(mItem.getLatitude(), newItemLatitude, mItem.getLongitude(), newItemLongitude);
 
                                 Log.i("UploadFragment", "Distance Difference: " + distanceDifference);
 
                                 // only adds to potentialMatches array if the objects are less than 500m apart and of the same category
-                                if(distanceDifference < 500 && mItem.getCategory().equals((String)singleItem.get("category")));
+                                if (distanceDifference < 500 && mItem.getCategory().equals((String) singleItem.get("category")))
+                                    ;
                                 {
                                     String uniqueID = (String) singleItem.get("imageLocationString");
                                     String answer1 = (String) singleItem.get("answer1");
@@ -418,17 +413,64 @@ public class UploadFragment extends Fragment {
                                     int year = Integer.parseInt(str[2]);
 
 
-
                                     mPotentialMatches.add(uniqueID);
                                     double score = calculateOverallScore(answer1, answer2, year, month, day);
-                                    Log.i("UploadFramgment" , "Final score: " + score);
+                                    mMapOfScores.put(score, uniqueID);
+                                    Log.i("UploadFramgment", "Final score: " + score);
                                 }
 
-                            };
+                            }
+                        ;
                         Log.i("UploadFragment", "Long: " + mPotentialMatches.toString());
-                        }
                     }
-                );
+                }
+        );
+        if (mMapOfScores.size() > 0) {
+            mItem.setMatched(true);
+            String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            Map<String, Object> map = new HashMap<>();
+            map.put("score", 5);
+            rootRef.child("test").child("Name1").updateChildren(map);
+
+
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
+
+            ref.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Get map of users in datasnapshot
+                            collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            //handle databaseError
+                        }
+
+                        private void collectAllUsers(Map<String, Object> users) {
+
+                            //iterate through each user, ignoring their UID
+                            if (users != null)
+                                for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+                                    //Get user map
+                                    Map singleUser = (Map) entry.getValue();
+                                    String childName = entry.getKey();
+
+                                    if(singleUser.get("imageLocationString").toString().equals(keyOfFoundItem))
+                                    {
+                                        Map<String, Object> map = new HashMap<>();
+                                        map.put("matched", true);
+                                        rootRef.child("Users").child("FoundItems").child(childName).updateChildren(map);
+                                    }
+                                }
+                        });
+                    });
+        }
     }
 
     private double calculateOverallScore(String answer1, String answer2, int foundYear, int foundMonth, int foundDay) throws JSONException, IOException {
@@ -446,9 +488,9 @@ public class UploadFragment extends Fragment {
         int lostMonth = Integer.parseInt(str[1]);
         int lostYear = Integer.parseInt(str[2]);
 
-        Log.i("UploadFragment", "Calling date with  parameters years " + lostYear + " " +foundYear + " month: " + lostMonth + " " + foundMonth + " days: " + lostDay  + " " + foundDay);
+        Log.i("UploadFragment", "Calling date with  parameters years " + lostYear + " " + foundYear + " month: " + lostMonth + " " + foundMonth + " days: " + lostDay + " " + foundDay);
 
-        double dateScore =  dateSimilarityAlgorithm(lostYear, foundYear, lostDay, foundDay , lostMonth, foundMonth);
+        double dateScore = dateSimilarityAlgorithm(lostYear, foundYear, lostDay, foundDay, lostMonth, foundMonth);
 
         Log.i("dateScore", "dateScore  == " + dateScore);
 
@@ -456,24 +498,24 @@ public class UploadFragment extends Fragment {
     }
 
     // returns the amount of meters between the two points
-    public double calculateDistanceBetweenPoints(double lat1, double lat2, double long1, double long2){
-            double earthRadius = 6371200; //meters
-            double differentLat = Math.toRadians(lat2-lat1);
-            double differenceLong = Math.toRadians(long2-long1);
-            double a = Math.sin(differentLat/2) * Math.sin(differentLat/2) +
-                    Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
-                            Math.sin(differenceLong/2) * Math.sin(differenceLong/2);
-            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-            double dist = (double) (earthRadius * c);
+    public double calculateDistanceBetweenPoints(double lat1, double lat2, double long1, double long2) {
+        double earthRadius = 6371200; //meters
+        double differentLat = Math.toRadians(lat2 - lat1);
+        double differenceLong = Math.toRadians(long2 - long1);
+        double a = Math.sin(differentLat / 2) * Math.sin(differentLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(differenceLong / 2) * Math.sin(differenceLong / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double dist = (double) (earthRadius * c);
 
-            return dist;
+        return dist;
     }
 
     public double findTextSimiliary(String stringToCompare1, String stringToCompare2) throws JSONException, IOException {
         OkHttpClient client = new OkHttpClient();
 
         RequestBody body = new FormBody.Builder()
-                .add("text1" ,stringToCompare1)
+                .add("text1", stringToCompare1)
                 .add("text2", stringToCompare2)
                 .build();
 
@@ -500,7 +542,7 @@ public class UploadFragment extends Fragment {
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
 
                 String responseBody = response.body().string();
-                Log.i("UploadFragment", "Response body: "+responseBody);
+                Log.i("UploadFragment", "Response body: " + responseBody);
 
                 JSONObject object = null;
                 try {
@@ -510,8 +552,8 @@ public class UploadFragment extends Fragment {
                 }
 
                 try {
-                    Log.i("HomeFragment" , "text similiary from API " + Double.parseDouble(object.get("similarity").toString()));
-                     score[0] = Double.parseDouble(object.get("similarity").toString());
+                    Log.i("HomeFragment", "text similiary from API " + Double.parseDouble(object.get("similarity").toString()));
+                    score[0] = Double.parseDouble(object.get("similarity").toString());
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -523,61 +565,54 @@ public class UploadFragment extends Fragment {
 
     // returns a value between 0 - 1, 1 being very similiar, 0 being not similar at all, year 1 is the lost date
     // lostDate is AFTER found date
-    public double dateSimilarityAlgorithm(int year1, int year2, int day1, int day2, int month1, int month2)
-    {
-        if(year1 - year2 > 1)
+    public double dateSimilarityAlgorithm(int year1, int year2, int day1, int day2, int month1, int month2) {
+        if (year1 - year2 > 1)
             return 0;
 
 
         int counter = 0;
 
-        while(day2 < day1)
-        {
-            if(numInMonth(month2,  year2) == day2)
-            {
+        while (day2 < day1) {
+            if (numInMonth(month2, year2) == day2) {
                 day2 = 1;
-                if(month2 == 12)
+                if (month2 == 12)
                     month2 = 1;
                 else
                     month2++;
-            }
-            else
+            } else
                 day2++;
 
             counter++;
         }
 
-        Log.i("UploadFragment" , "Counter amount: " + counter);
+        Log.i("UploadFragment", "Counter amount: " + counter);
 
-        if(month2 != month1)
-        {
-           counter += numInMonth(month2, year2);
+        if (month2 != month1) {
+            counter += numInMonth(month2, year2);
         }
 
-        if(counter > 20)
+        if (counter > 20)
             return 0.0;
         else {
-            if(counter == 0)
+            if (counter == 0)
                 return 1;
             return 1 - (counter / 20.0);
         }
 
     }
 
-    public int numInMonth(int month, int year)
-    {
-        if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
+    public int numInMonth(int month, int year) {
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12)
             return 31;
-        if(month == 2 && isLeapYear(year))
+        if (month == 2 && isLeapYear(year))
             return 29;
-        if(month == 2 && isLeapYear(year) == false)
+        if (month == 2 && isLeapYear(year) == false)
             return 28;
 
-        return  30;
+        return 30;
     }
 
-    public boolean isLeapYear(int year)
-    {
-        return (((year % 4 == 0) && (year % 100!= 0)) || (year%400 == 0));
+    public boolean isLeapYear(int year) {
+        return (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0));
     }
 }
