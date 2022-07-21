@@ -29,6 +29,8 @@ import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
 import com.example.foundy.Structures.Meetup;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 
 import com.google.android.gms.tasks.Task;
@@ -199,8 +201,8 @@ public class UploadFragment extends Fragment {
 
 
                 setUpDatabaseAndFields();
-                itemMatchingAlgorithm();
-                findLocation(37.386051,  -122.083855, 37.386051, -122.083855, "Mountain View");
+                LatLng latLng = itemMatchingAlgorithm();
+                Meetup meetup = findLocation(mItemLatitude,  latLng.latitude, mItemLongitude, latLng.longitude);
 
                 if (mIfFoundUpload == false) {
 
@@ -208,6 +210,10 @@ public class UploadFragment extends Fragment {
                 } else {
                     mDatabase.child("Users").child("FoundItems").push().setValue(mItem);
                 }
+
+                if(meetup != null)
+                    mDatabase.child("Users").child("MeetUps").push().setValue(meetup);
+
                 mNumOfImages++;
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
@@ -368,7 +374,9 @@ public class UploadFragment extends Fragment {
         return randomgUI;
     }
 
-    public void itemMatchingAlgorithm() {
+    public LatLng itemMatchingAlgorithm() {
+
+        final LatLng[] foundLocation = {null};
 
 
         filteringAlgorithm();
@@ -376,6 +384,7 @@ public class UploadFragment extends Fragment {
         if (mMapOfScores.size() > 0 && mMapOfScores.lastKey() > 0) {
             mItem.setMatched(true);
             String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
+
 
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
 
@@ -407,6 +416,11 @@ public class UploadFragment extends Fragment {
 
                                     if(singleUser.get("imageLocationString").toString().equals(keyOfFoundItem))
                                     {
+
+                                        double latitude = (Double) singleUser.get("longitude");
+                                        double longitude = (Double) singleUser.get("latitude");
+                                        foundLocation[0] = new LatLng(latitude, longitude);
+
                                         singleUser.get("userID");
                                         Map<String, Object> map = new HashMap<>();
                                         map.put("matched", true);
@@ -416,6 +430,7 @@ public class UploadFragment extends Fragment {
                         }
                     });
         }
+        return foundLocation[0];
     }
 
     private void filteringAlgorithm() {
@@ -522,17 +537,19 @@ public class UploadFragment extends Fragment {
     }
 
 
-    public Meetup findLocation(double lat1, double lat2, double longg1, double longg2, String city)
+    public Meetup findLocation(double lat1, double lat2, double longg1, double longg2)
     {
-        Meetup meetup = new Meetup();
+        final Meetup[] meetup = {null};
 
         OkHttpClient client = new OkHttpClient().newBuilder()
                 .build();;
 
-        MediaType mediaType = MediaType.parse("text/plain");
-        RequestBody body = RequestBody.create("", mediaType);
+        LatLngBounds bounds = new LatLngBounds(new LatLng(lat1, longg1), new LatLng(lat2, longg2));
+        LatLng center = bounds.getCenter();
+
+
         Request request = new Request.Builder()
-                .url("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=37.386051%2C-122.083855&radius=1500&type=restaurant&keyword=store&key=" + BuildConfig.MAPS_API_KEY)
+                .url("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + center.latitude + " %2C-" + center.longitude + " &radius=1500&type=restaurant&keyword=store&key=" + BuildConfig.MAPS_API_KEY)
                 .build();
         client.newCall(request).enqueue(new Callback() {
             @Override
@@ -543,35 +560,33 @@ public class UploadFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 String responseBody = response.body().string();
-                //Log.i("UploadFragment", "Response2: " + responseBody);
 
                 try {
                     JSONObject object = new JSONObject(responseBody);
-                    boolean found == false;
+                    boolean found = false;
                     while(found == false) {
 
                         JSONObject jsonObject = (JSONObject) object.getJSONArray("results").get(0);
                         //check if building is open
                         boolean ifOpen = jsonObject.getString("business_status").equals("OPERATIONAL");
                         if(ifOpen) {
-                            found == true;
-                            meetup.setCity(jsonObject.getString("vicinity"));
-                            meetup.setLocationName(jsonObject.getString("name"));
-                            Log.i("UploadFragment1", object.getJSONArray("results").get(0));
+                            meetup[0] = new Meetup();
+                            found = true;
+                            meetup[0].setCity(jsonObject.getString("vicinity"));
+                            meetup[0].setLocationName(jsonObject.getString("name"));
+                            Log.i("UploadFragment1", (String) object.getJSONArray("results").get(0));
                         }
                     }
 
-                    meetup.setHour(5);
-                    meetup.setMinute(30);
-
-                    meetup.setFoundUID();
+                    meetup[0].setHour(5);
+                    meetup[0].setMinute(30);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
             }
         });
-        return null;
+        return meetup[0];
     }
 
     public double findTextSimiliary(String stringToCompare1, String stringToCompare2) throws JSONException, IOException {
