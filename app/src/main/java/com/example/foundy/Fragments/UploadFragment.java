@@ -27,9 +27,14 @@ import com.example.foundy.BuildConfig;
 import com.example.foundy.FragmentChoiceScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
+import com.example.foundy.Structures.Meetup;
+
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+
 import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,11 +46,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +62,7 @@ import java.util.UUID;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
+import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -153,6 +161,7 @@ public class UploadFragment extends Fragment {
                 map.setArguments(bundle);
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
 
+
             }
         });
 
@@ -192,7 +201,8 @@ public class UploadFragment extends Fragment {
 
 
                 setUpDatabaseAndFields();
-                itemMatchingAlgorithm();
+                LatLng latLng = itemMatchingAlgorithm();
+                Meetup meetup = findLocation(mItemLatitude,  latLng.latitude, mItemLongitude, latLng.longitude);
 
                 if (mIfFoundUpload == false) {
 
@@ -200,6 +210,10 @@ public class UploadFragment extends Fragment {
                 } else {
                     mDatabase.child("Users").child("FoundItems").push().setValue(mItem);
                 }
+
+                if(meetup != null)
+                    mDatabase.child("Users").child("MeetUps").push().setValue(meetup);
+
                 mNumOfImages++;
 
                 Intent i = new Intent(getContext(), FragmentChoiceScreen.class);
@@ -360,9 +374,66 @@ public class UploadFragment extends Fragment {
         return randomgUI;
     }
 
-    public void itemMatchingAlgorithm() {
+    public LatLng itemMatchingAlgorithm() {
+
+        final LatLng[] foundLocation = {null};
 
 
+        filteringAlgorithm();
+
+        if (mMapOfScores.size() > 0 && mMapOfScores.lastKey() > 0) {
+            mItem.setMatched(true);
+            String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
+
+
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
+
+            ref.addListenerForSingleValueEvent(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            //Get map of users in datasnapshot
+                            collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
+
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            //handle databaseError
+                        }
+
+                        private void collectAllUsers(Map<String, Object> users) {
+
+                            //iterate through each user, ignoring their UID
+                            if (users != null)
+                                for (Map.Entry<String, Object> entry : users.entrySet()) {
+
+                                    //Get user map
+                                    Map singleUser = (Map) entry.getValue();
+                                    String childName = entry.getKey();
+
+                                    if(singleUser.get("imageLocationString").toString().equals(keyOfFoundItem))
+                                    {
+
+                                        double latitude = (Double) singleUser.get("longitude");
+                                        double longitude = (Double) singleUser.get("latitude");
+                                        foundLocation[0] = new LatLng(latitude, longitude);
+
+                                        singleUser.get("userID");
+                                        Map<String, Object> map = new HashMap<>();
+                                        map.put("matched", true);
+                                        rootRef.child("Users").child("FoundItems").child(childName).updateChildren(map);
+                                    }
+                                }
+                        }
+                    });
+        }
+        return foundLocation[0];
+    }
+
+    private void filteringAlgorithm() {
         mRef.addListenerForSingleValueEvent(
                 new ValueEventListener() {
                     @Override
@@ -425,49 +496,6 @@ public class UploadFragment extends Fragment {
                     }
                 }
         );
-        if (mMapOfScores.size() > 0 && mMapOfScores.lastKey() > 0) {
-            mItem.setMatched(true);
-            String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
-
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
-
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
-
-            ref.addListenerForSingleValueEvent(
-                    new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            //Get map of users in datasnapshot
-                            collectAllUsers((Map<String, Object>) dataSnapshot.getValue());
-
-                        }
-
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            //handle databaseError
-                        }
-
-                        private void collectAllUsers(Map<String, Object> users) {
-
-                            //iterate through each user, ignoring their UID
-                            if (users != null)
-                                for (Map.Entry<String, Object> entry : users.entrySet()) {
-
-                                    //Get user map
-                                    Map singleUser = (Map) entry.getValue();
-                                    String childName = entry.getKey();
-
-                                    if(singleUser.get("imageLocationString").toString().equals(keyOfFoundItem))
-                                    {
-                                        Map<String, Object> map = new HashMap<>();
-                                        map.put("matched", true);
-                                        rootRef.child("Users").child("FoundItems").child(childName).updateChildren(map);
-                                    }
-                                }
-                        }
-                    });
-        }
     }
 
     private double calculateOverallScore(String answer1, String answer2, int foundYear, int foundMonth, int foundDay) throws JSONException, IOException {
@@ -506,6 +534,59 @@ public class UploadFragment extends Fragment {
         double dist = (double) (earthRadius * c);
 
         return dist;
+    }
+
+
+    public Meetup findLocation(double lat1, double lat2, double longg1, double longg2)
+    {
+        final Meetup[] meetup = {null};
+
+        OkHttpClient client = new OkHttpClient().newBuilder()
+                .build();;
+
+        LatLngBounds bounds = new LatLngBounds(new LatLng(lat1, longg1), new LatLng(lat2, longg2));
+        LatLng center = bounds.getCenter();
+
+
+        Request request = new Request.Builder()
+                .url("https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + center.latitude + " %2C-" + center.longitude + " &radius=1500&type=restaurant&keyword=store&key=" + BuildConfig.MAPS_API_KEY)
+                .build();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(@NonNull Call call, @NonNull IOException e) {
+
+            }
+
+            @Override
+            public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
+                String responseBody = response.body().string();
+
+                try {
+                    JSONObject object = new JSONObject(responseBody);
+                    boolean found = false;
+                    while(found == false) {
+
+                        JSONObject jsonObject = (JSONObject) object.getJSONArray("results").get(0);
+                        //check if building is open
+                        boolean ifOpen = jsonObject.getString("business_status").equals("OPERATIONAL");
+                        if(ifOpen) {
+                            meetup[0] = new Meetup();
+                            found = true;
+                            meetup[0].setCity(jsonObject.getString("vicinity"));
+                            meetup[0].setLocationName(jsonObject.getString("name"));
+                            Log.i("UploadFragment1", (String) object.getJSONArray("results").get(0));
+                        }
+                    }
+
+                    meetup[0].setHour(5);
+                    meetup[0].setMinute(30);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        return meetup[0];
     }
 
     public double findTextSimiliary(String stringToCompare1, String stringToCompare2) throws JSONException, IOException {
