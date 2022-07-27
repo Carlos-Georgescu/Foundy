@@ -1,5 +1,6 @@
 package com.example.foundy.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import com.example.foundy.Adapters.ProfileMatchedAdapter;
+import com.example.foundy.MeetupScreen;
 import com.example.foundy.R;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
@@ -57,6 +59,19 @@ public class ProfileFragment extends Fragment {
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
             }
         });
+
+        Button uploadLost4;
+
+        uploadLost4 = view.findViewById(R.id.uploadLost4);
+
+        uploadLost4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), MeetupScreen.class);
+                startActivity(i);
+            }
+        });
+
 
         return view;
     }

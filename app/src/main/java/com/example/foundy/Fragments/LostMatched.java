@@ -1,5 +1,6 @@
 package com.example.foundy.Fragments;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -15,6 +16,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.foundy.Adapters.LostItemAdapter;
+import com.example.foundy.FragmentChoiceScreen;
+import com.example.foundy.MeetupScreen;
 import com.example.foundy.R;
 import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -64,11 +67,16 @@ public class LostMatched extends Fragment {
 
         // Inflate the layout for this fragment
 
+
+
         itemList = new ArrayList<>();
         queryPosts();
         mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages);
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        RecyclerView mPosts = view.findViewById(R.id.rvMatchedPosts);
+
 
 
     }
@@ -105,7 +113,7 @@ public class LostMatched extends Fragment {
                                 Map singleUser = (Map) entry.getValue();
                                 //Get phone field and append to list
 
-                                if(((Boolean)singleUser.get("matched")) == true) {
+                                if(((Boolean)singleUser.get("matched")) == true && (((Boolean)singleUser.get("isFound")) == false)) {
                                     Item newItem = new Item();
                                     newItem.setWhatLost((String) singleUser.get("whatLost"));
                                     newItem.setWhereLost((String) singleUser.get("whereLost"));
