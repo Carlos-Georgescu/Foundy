@@ -21,6 +21,7 @@ import com.example.foundy.Adapters.LostItemAdapter;
 import com.example.foundy.Adapters.ProfileMatchedAdapter;
 import com.example.foundy.MeetupScreen;
 import com.example.foundy.R;
+import com.example.foundy.RecyclerViewInterface;
 import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
@@ -44,7 +45,7 @@ import java.util.Map;
  * Use the {@link FoundMatched#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FoundMatched extends Fragment {
+public class FoundMatched extends Fragment implements RecyclerViewInterface {
 
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
@@ -81,7 +82,7 @@ public class FoundMatched extends Fragment {
 
         itemList = new ArrayList<>();
         queryPosts();
-        mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages);
+        mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages, this);
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -160,5 +161,10 @@ public class FoundMatched extends Fragment {
                             }
                     }
                 });
+    }
+
+    @Override
+    public void OnItemClick(int position) {
+
     }
 }
