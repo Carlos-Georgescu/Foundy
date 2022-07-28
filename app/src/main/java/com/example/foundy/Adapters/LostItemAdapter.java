@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.example.foundy.R;
+import com.example.foundy.RecyclerViewInterface;
 import com.example.foundy.Structures.Item;
 
 import java.util.List;
@@ -24,11 +25,13 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
     private final Context mContext;
     private final List<Item> mItemList;
     private final List<Uri> mLostItemImages;
+    private final RecyclerViewInterface recyclerViewInterface;
 
-    public LostItemAdapter(Context mContext, List<Item> mItemList, List<Uri> mLostItemImages ) {
+    public LostItemAdapter(Context mContext, List<Item> mItemList, List<Uri> mLostItemImages, RecyclerViewInterface recyclerViewInterface) {
         this.mContext = mContext;
         this.mItemList = mItemList;
         this.mLostItemImages = mLostItemImages;
+        this.recyclerViewInterface = recyclerViewInterface;
     }
 
     @NonNull
@@ -67,6 +70,20 @@ public class LostItemAdapter extends RecyclerView.Adapter<LostItemAdapter.ViewHo
             whatText = itemView.findViewById(R.id.whatText);
             whereText = itemView.findViewById(R.id.whereText);
             whenText = itemView.findViewById(R.id.whenText);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(recyclerViewInterface != null)
+                    {
+                        int position = getAdapterPosition();
+
+                        if(position != RecyclerView.NO_POSITION){
+                            recyclerViewInterface.OnItemClick(position);
+                        }
+                    }
+                }
+            });
         }
 
         public void bind(Item item, Uri uri) {

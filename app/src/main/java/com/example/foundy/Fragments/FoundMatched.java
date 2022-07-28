@@ -1,5 +1,6 @@
 package com.example.foundy.Fragments;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -18,7 +19,9 @@ import android.widget.Button;
 
 import com.example.foundy.Adapters.LostItemAdapter;
 import com.example.foundy.Adapters.ProfileMatchedAdapter;
+import com.example.foundy.MeetupScreen;
 import com.example.foundy.R;
+import com.example.foundy.RecyclerViewInterface;
 import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.tabs.TabLayout;
@@ -42,7 +45,7 @@ import java.util.Map;
  * Use the {@link FoundMatched#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FoundMatched extends Fragment {
+public class FoundMatched extends Fragment implements RecyclerViewInterface {
 
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
@@ -73,11 +76,13 @@ public class FoundMatched extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         mRvPosts = view.findViewById(R.id.rvFoundItems);
 
+        RecyclerView mPosts = view.findViewById(R.id.rvFoundItems);
+
         // Inflate the layout for this fragment
 
         itemList = new ArrayList<>();
         queryPosts();
-        mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages);
+        mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages, this);
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -120,9 +125,16 @@ public class FoundMatched extends Fragment {
                                 Map singleUser = (Map) entry.getValue();
 
                                 String dataUserID = (String) singleUser.get("userID");
+                                Boolean isit = (Boolean)singleUser.get("matched");
                                 //Get phone field and append to list
 
-                                if(((Boolean)singleUser.get("matched")) == true && dataUserID.equals(userUid)) {
+                                Boolean isF = (Boolean) ((Boolean)singleUser.get("isFound"));
+
+                                Log.i("FoundMatched", "Matchedd: "+isit);
+                                Log.i("FoundMatched", "Matchhh: "+isF);
+
+
+                                if(((Boolean)singleUser.get("matched")) == true  && ((Boolean)singleUser.get("isFound")) == true) {
                                     Item newItem = new Item();
                                     newItem.setWhatLost((String) singleUser.get("whatLost"));
                                     newItem.setWhereLost((String) singleUser.get("whereLost"));
@@ -149,5 +161,12 @@ public class FoundMatched extends Fragment {
                             }
                     }
                 });
+    }
+
+    @Override
+    public void OnItemClick(int position) {
+
+        Intent i = new Intent(getActivity(), MeetupScreen.class);
+        startActivity(i);
     }
 }

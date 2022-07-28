@@ -19,6 +19,7 @@ public class Item {
     private double latitude;
     private double longitude;
     private String userID;
+    private boolean isFound;
 
     public Item(){
 
@@ -60,6 +61,14 @@ public class Item {
 
     public void setLatitude(double latitude) {
         this.latitude = latitude;
+    }
+
+    public Boolean getIsFound() {
+        return isFound;
+    }
+
+    public void setIsFound(Boolean isFound) {
+        this.isFound = isFound;
     }
 
     public double getLongitude() {
