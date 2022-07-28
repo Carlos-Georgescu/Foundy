@@ -166,5 +166,7 @@ public class FoundMatched extends Fragment implements RecyclerViewInterface {
     @Override
     public void OnItemClick(int position) {
 
+        Intent i = new Intent(getActivity(), MeetupScreen.class);
+        startActivity(i);
     }
 }
