@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.foundy.Adapters.LostItemAdapter;
 import com.example.foundy.R;
+import com.example.foundy.RecyclerViewInterface;
 import com.example.foundy.Structures.Item;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
@@ -33,7 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements RecyclerViewInterface {
 
     private RecyclerView mRvPosts;
     private LostItemAdapter mAdapter;
@@ -58,7 +59,7 @@ public class HomeFragment extends Fragment {
 
         itemList = new ArrayList<>();
         queryPosts();
-        mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages);
+        mAdapter = new LostItemAdapter(getContext(), itemList, lostItemImages, this);
         mRvPosts.setAdapter(mAdapter);
         mRvPosts.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -124,4 +125,8 @@ public class HomeFragment extends Fragment {
                 });
     }
 
+    @Override
+    public void OnItemClick(int position) {
+
+    }
 }

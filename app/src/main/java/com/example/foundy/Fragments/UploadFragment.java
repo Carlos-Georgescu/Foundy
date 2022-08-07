@@ -46,13 +46,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
@@ -62,7 +60,6 @@ import java.util.UUID;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
@@ -97,6 +94,7 @@ public class UploadFragment extends Fragment {
     Button mTakePictureButton;
     ImageView mItemPicture;
     Button mHelpMeFind;
+    Meetup mMeetup;
     TextView mTopText;
     View mRootView;
     TreeMap<Double, String> mMapOfScores = new TreeMap<Double, String>();
@@ -154,12 +152,16 @@ public class UploadFragment extends Fragment {
         mOpenMapButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //findLocation(37.386051, 37.386051, -122.083855, -122.083855, "MountainView");
                 Fragment map = new MapsFragment();
                 Bundle bundle = new Bundle();
                 if (mIfFoundUpload == true)
                     bundle.putString("type", "found");
                 map.setArguments(bundle);
                 getParentFragmentManager().beginTransaction().replace(R.id.fragment_container, map).commit();
+
+
 
 
             }
@@ -202,17 +204,17 @@ public class UploadFragment extends Fragment {
 
                 setUpDatabaseAndFields();
                 LatLng latLng = itemMatchingAlgorithm();
-                Meetup meetup = findLocation(mItemLatitude,  latLng.latitude, mItemLongitude, latLng.longitude);
+                if(mItem.getMatched() == true) {
+                    mMeetup = findLocation(mItemLatitude, latLng.latitude, mItemLongitude, latLng.longitude);
+                    if (mMeetup != null)
+                        mDatabase.child("Users").child("MeetUps").push().setValue(mMeetup);
+                }
 
                 if (mIfFoundUpload == false) {
-
                     mDatabase.child("Users").child(mUserUid).child("LostItems").push().setValue(mItem);
                 } else {
                     mDatabase.child("Users").child("FoundItems").push().setValue(mItem);
                 }
-
-                if(meetup != null)
-                    mDatabase.child("Users").child("MeetUps").push().setValue(meetup);
 
                 mNumOfImages++;
 
@@ -316,6 +318,12 @@ public class UploadFragment extends Fragment {
         mUserUid = user.getUid();
 
         mItem.setImageLocationString(uploadImage(mSaveUriPic[0]));
+
+
+        if(mIfFoundUpload == true)
+            mItem.setIsFound(true);
+        else
+            mItem.setIsFound(false);
         mItem.setWhatLost(mWhatLostText.getText().toString());
         mItem.setAnswer1(mQuestion1Answer.getText().toString());
         mItem.setAnswer2(mQuestion2Answer.getText().toString());
@@ -377,19 +385,13 @@ public class UploadFragment extends Fragment {
     public LatLng itemMatchingAlgorithm() {
 
         final LatLng[] foundLocation = {null};
-
-
         filteringAlgorithm();
-
         if (mMapOfScores.size() > 0 && mMapOfScores.lastKey() > 0) {
             mItem.setMatched(true);
             String keyOfFoundItem = mMapOfScores.get(mMapOfScores.lastKey());
 
-
             DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-
             DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child("Users").child("FoundItems");
-
             ref.addListenerForSingleValueEvent(
                     new ValueEventListener() {
                         @Override
@@ -424,6 +426,9 @@ public class UploadFragment extends Fragment {
                                         singleUser.get("userID");
                                         Map<String, Object> map = new HashMap<>();
                                         map.put("matched", true);
+                                        mMeetup = new Meetup();
+                                        mMeetup.setFoundUID(keyOfFoundItem);
+                                        mMeetup.setLostUID(singleUser.get("imageLocationString").toString());
                                         rootRef.child("Users").child("FoundItems").child(childName).updateChildren(map);
                                     }
                                 }
@@ -470,7 +475,6 @@ public class UploadFragment extends Fragment {
 
                                 // only adds to potentialMatches array if the objects are less than 500m apart and of the same category
                                 if (distanceDifference < 500 && mItem.getCategory().equals((String) singleItem.get("category")))
-                                    ;
                                 {
                                     String uniqueID = (String) singleItem.get("imageLocationString");
                                     String answer1 = (String) singleItem.get("answer1");
@@ -560,6 +564,8 @@ public class UploadFragment extends Fragment {
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 String responseBody = response.body().string();
+
+                Log.i("ResponseBody" ,"Response: "+responseBody);
 
                 try {
                     JSONObject object = new JSONObject(responseBody);
